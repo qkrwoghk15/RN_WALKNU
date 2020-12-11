@@ -48,7 +48,7 @@ export default class Main extends React.Component {
             initialRouteName="Main"
             screenOptions={{
               headerStyle: {
-                backgroundColor: 'black',
+                backgroundColor: '#0D0D0D',
               },
               headerTintColor: '#fff',
               headerTitleStyle: {
@@ -67,7 +67,7 @@ export default class Main extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'lightgray',
+    backgroundColor: '#404040',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   button: {
     width: 120,
     height: 120,
-    backgroundColor: 'black',
+    backgroundColor: '#737373',
     paddingHorizontal: 20,
     paddingVertical: 15,
     margin: 25,
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 25,
     textAlign: 'center',
-    color: '#fff',
+    color: '#F2F2F2',
     fontWeight: 'bold',
   },
 });

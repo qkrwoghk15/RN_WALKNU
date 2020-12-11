@@ -1,138 +1,110 @@
-import React, { Component, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert,  AppRegistry, StatusBar,} from 'react-native';
-import { Table, TableWrapper,Col, Cols, Cell } from 'react-native-table-component';
-import * as Animatable from 'react-native-animatable';
-import styled from 'styled-components'
+import React, { Component, useRef,  useState, useEffect } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Alert, FlatList} from 'react-native';
+import { Table, TableWrapper,Col, Cols, Cell, Row, Rows } from 'react-native-table-component';
 import BottomSheet from "react-native-swipeable-bottom-sheet"
-
-import axios from 'axios';
-
-import demoList from '../components/data.js'
-import SearchList, { HighlightableText } from '../library'
-import Touchable from '../library/utils/Touchable'
+import RBSheet from "react-native-raw-bottom-sheet";
+import { SearchBar } from 'react-native-elements';
 
 ////////////////////////////////////////////////// Modal Screen //////////////////////////////////////////////////
-const rowHeight = 40
-class Search extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      dataSource: demoList
+const SearchList = () =>{
+  const [search, setSearch] = useState('');
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
+  const [masterDataSource, setMasterDataSource] = useState([]);
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        setFilteredDataSource(responseJson);
+        setMasterDataSource(responseJson);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  const searchFilterFunction = (text) => {
+    // Check if searched text is not blank
+    if (text) {
+      // Inserted text is not blank
+      // Filter the masterDataSource
+      // Update FilteredDataSource
+      const newData = masterDataSource.filter(function (item) {
+        const itemData = item.title
+          ? item.title.toUpperCase()
+          : ''.toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setFilteredDataSource(newData);
+      setSearch(text);
+    } else {
+      // Inserted text is blank
+      // Update FilteredDataSource with masterDataSource
+      setFilteredDataSource(masterDataSource);
+      setSearch(text);
     }
-  }
+  };
 
-  // custom render row
-  renderRow (item, sectionID, rowID, highlightRowFunc, isSearching) {
+  const ItemView = ({ item }) => {
     return (
-      <Touchable onPress={() => {
-        Alert.alert('Clicked!', `sectionID: ${sectionID}; item: ${item.searchStr}`,
-          [
-            {text: 'OK', onPress: () => console.log('OK Pressed')},
-          ],
-          {cancelable: true})
-      }}>
-        <View key={rowID} style={{flex: 1, marginLeft: 20, height: rowHeight, justifyContent: 'center'}}>
-          {/*use `HighlightableText` to highlight the search result*/}
-          <HighlightableText
-            matcher={item.matcher}
-            text={item.searchStr}
-            textColor={'#000'}
-            hightlightTextColor={'#0069c0'}
-          />
-        </View>
-      </Touchable>
-    )
-  }
+      // Flat List Item
+      <Text style={searchstyles.itemStyle} onPress={() => getItem(item)}>
+        {item.id}
+        {'.'}
+        {item.title.toUpperCase()}
+      </Text>
+    );
+  };
 
-  // render empty view when datasource is empty
-  renderEmpty () {
+  const ItemSeparatorView = () => {
     return (
-      <View style={searchstyles.emptyDataSource}>
-        <Text style={{color: '#979797', fontSize: 18, paddingTop: 20}}> No Content </Text>
-      </View>
-    )
-  }
+      // Flat List Item Separator
+      <View
+        style={{
+          height: 0.5,
+          width: '100%',
+          backgroundColor: '#C8C8C8',
+        }}
+      />
+    );
+  };
 
-  // render empty result view when search result is empty
-  renderEmptyResult (searchStr) {
-    return (
-      <View style={searchstyles.emptySearchResult}>
-        <Text style={{color: '#979797', fontSize: 18, paddingTop: 20}}> No Result For <Text
-          style={{color: '#171a23', fontSize: 18}}>{searchStr}</Text></Text>
-        <Text style={{color: '#979797', fontSize: 18, alignItems: 'center', paddingTop: 10}}>Please search again</Text>
-      </View>
-    )
-  }
+  const getItem = (item) => {
+    // Function for click on an item
+    alert('Id : ' + item.id + ' Title : ' + item.title);
+  };
 
-  render () {
-    return (
+  return (
+    <View style={{ flex: 1 }}>
       <View style={searchstyles.container}>
-        <StatusBar backgroundColor='#F00' barStyle='light-content' />
-        <SearchList
-          data={this.state.dataSource}
-          renderRow={this.renderRow.bind(this)}
-          renderEmptyResult={this.renderEmptyResult.bind(this)}
-          renderBackButton={() => null}
-          renderEmpty={this.renderEmpty.bind(this)}
-
-          rowHeight={rowHeight}
-
-          toolbarBackgroundColor={'#2196f3'}
-          title='Search List Demo'
-          cancelTitle='取消'
-          onClickBack={() => {}}
-
-          searchListBackgroundColor={'#2196f3'}
-
-          searchBarToggleDuration={300}
-
-          searchInputBackgroundColor={'#0069c0'}
-          searchInputBackgroundColorActive={'#6ec6ff'}
-          searchInputPlaceholderColor={'#FFF'}
-          searchInputTextColor={'#FFF'}
-          searchInputTextColorActive={'#000'}
-          searchInputPlaceholder='Search'
-          sectionIndexTextColor={'#6ec6ff'}
-          searchBarBackgroundColor={'#2196f3'}
+        <SearchBar
+          round
+          searchIcon={{ size: 24 }}
+          onChangeText={(text) => searchFilterFunction(text)}
+          onClear={(text) => searchFilterFunction('')}
+          placeholder="Type Here..."
+          value={search}
+        />
+        <FlatList
+          data={filteredDataSource}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={ItemSeparatorView}
+          renderItem={ItemView}
         />
       </View>
-    )
-  }
-}
+    </View>
+  );
+};
 
 const searchstyles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#efefef',
-    flexDirection: 'column',
-    justifyContent: 'flex-start'
+    backgroundColor: '#A6A6A6',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10
+  itemStyle: {
+    padding: 10,
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5
-  },
-  emptyDataSource: {
-    flex: 1,
-    alignItems: 'center',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    marginTop: 50
-  },
-  emptySearchResult: {
-    flex: 1,
-    alignItems: 'center',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-    marginTop: 50
-  }
-})
-
+});
 ////////////////////////////////////////////////// Modal Screen //////////////////////////////////////////////////
 
 ////////////////////////////////////////////////// Modal Button //////////////////////////////////////////////////
@@ -151,17 +123,24 @@ const BottomSwipeButton = () => {
         </View>
       </TouchableOpacity>
 
-      <BottomSheet
+      <RBSheet
             ref = {modalizeRef}
-            height = {700}
+            height = {780}
+            animationType = "fade"
             closeOnDragDown = {true}
             closeOnPressMask = {true}
-            topBarStyle = {styles.topBarStyle}
-            backDropStyle = {{elevation:5}}
-            sheetStyle = {{borderRadius:10}}
+            dragFromTopOnly = {true}
+            customStyles={{
+              wrapper: {
+                backgroundColor: "transparent"
+              },
+              draggableIcon: {
+                backgroundColor: "#000"
+              }
+            }}
         >
-          <Search></Search>
-      </BottomSheet>
+          <SearchList></SearchList>
+      </RBSheet>
     </>
   );
 }
@@ -177,25 +156,33 @@ export default class Navigate extends Component {
         </View>
       </TouchableOpacity>
     );
+
+    const bgcolor = (num) =>{
+      if (num == 60) return '#404040'
+      else return 'white'
+    }
  
     this.state = {
-      tableTitle: ['9:00-', '10:30-', '12:00-', '13:30-', '15:00-', '16:30-', '18:00-'],
-      tableData: [
-        [elementButton('Mon'), 'a', 'b', 'c', 'd','a', 'b', 'c'],
-        [elementButton('Tue'), '1', '2', '3', '4','a', 'b', 'c'],
-        [elementButton('Wed'), 'a', 'b', 'c', 'd','a', 'b', 'c'],
-        [elementButton('Thu'), 'a', 'b', 'c', 'd','a', 'b', 'c'],
-        [elementButton('Fri'), 'a', 'b', 'c', 'd','a', 'b', 'c']
-      ]
+      tableTime: [['9:00-'], ['10:30-'], ['12:00-'], ['13:30-'], ['15:00-'], ['16:30-'], ['18:00-']],
+      tableHead: [elementButton('Mon'), elementButton('Tue'), elementButton('Wed'), elementButton('Thu'), elementButton('Fri')],
     }
   }
  
   _alertIndex(value) {
     Alert.alert(`This is column ${value}`);
   }
- 
+  
   render() {
     const state = this.state;
+    const tableData = [];
+    for (let i = 0; i < 7; i += 1) {
+      const rowData = [];
+      for (let j = 0; j < 5; j += 1) {
+        rowData.push(`${i}${j}`);
+      }
+      tableData.push(rowData);
+    }
+
     return (
       <View style={styles.container}>
         <View style={{flex: 2, padding: 10, paddingTop: 30, flexDirection: 'row', alignItems:'flex-start'}}>
@@ -203,19 +190,31 @@ export default class Navigate extends Component {
             <TableWrapper style={{width: 80}}>
               <Cell data="" style={styles.singleHead}/>
               <TableWrapper style={{flexDirection: 'row'}}>
-                <Col data={['AM', 'PM']} style={styles.head} heightArr={[160, 120]} textStyle={styles.text} />
-                <Col data={state.tableTitle} style={styles.title} heightArr={[40, 40, 40, 40, 40, 40, 40, 40]} textStyle={styles.titleText}></Col>
+                <Col data={['AM', 'PM']} style={styles.head} heightArr={[80, 200]} textStyle={styles.btnText} />
+                <Col data={state.tableTime} style={[styles.head]} heightArr={[40, 40, 40, 40, 40, 40, 40, 40]} textStyle={styles.timeText}></Col>
               </TableWrapper>
             </TableWrapper>
 
-            <TableWrapper style={{flex:1, backgroundColor:'white'}}>
-              <Cols data={state.tableData} heightArr={[60, 40, 40, 40, 40, 40, 40, 40, 40]} textStyle={styles.text}/>
+            <TableWrapper style={{flex:1, backgroundColor: '#404040'}}>
+              <Row data={state.tableHead} flex={1} height={60} style={styles.head} textStyle={styles.text} />
+              {
+                tableData.map((rowData, index) => (
+                  <Row
+                    key={index}
+                    data={rowData}
+                    flex={1}
+                    height={40}
+                    style={[styles.row, index%2 && {backgroundColor: '#A6A6A6'}]}
+                    textStyle={styles.text}
+                  />
+                ))
+              }
             </TableWrapper>
           </Table>
         </View>
 
         <View style={{flex: 1, flexDirection:'column-reverse', paddingBottom: 50}}>
-          <BottomSwipeButton style={{}}></BottomSwipeButton>
+          <BottomSwipeButton></BottomSwipeButton>
         </View>
       </View>
     )
@@ -228,25 +227,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'stretch',
     padding: 0,
-    backgroundColor: 'lightgray',
+    backgroundColor: '#404040',
   },
-  singleHead: { width: 80, height: 60, backgroundColor: '#c8e1ff' },
-  head: { flex: 1, backgroundColor: '#c8e1ff' },
-  title: { flex: 2, backgroundColor: '#f6f8fa' },
-  titleText: { marginRight: 6, textAlign:'right' },
-  text: { textAlign: 'center' },
-  btn: { width: 29, height: 20, marginLeft: 15, backgroundColor: '#c8e1ff', borderRadius: 2 },
-  btnText: { textAlign: 'center' },
+  singleHead: { width: 80, height: 60, backgroundColor: '#A6A6A6' },
+  head: { backgroundColor: '#A6A6A6' },
+  title: { backgroundColor: '#737373' },
+  timeText: { marginRight: 6, textAlign:'right', fontSize: 10 },
+  text: { textAlign: 'center'},
+  btn: { height: 58, backgroundColor: '#737373', borderRadius: 2 },
+  btnText: { textAlign: 'center', fontSize: 25, fontWeight: '600', fontFamily: "Cochin" },
+  row: {backgroundColor: '#737373' },
 
-  myModal: {
-    flex: 1,
-    backgroundColor: '#005252',
-    //alignItems: 'flex-end',
-  },
   modalBtn: {
     width: 150,
     height: 50,
-    backgroundColor: '#f4511e',
+    backgroundColor: '#737373',//f4511e
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 40 
@@ -257,10 +252,4 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  topBarStyle : {
-    width : 50,
-    height : 5,
-    borderRadius : 2.5,
-    backgroundColor : "#000000"
-  }
 });

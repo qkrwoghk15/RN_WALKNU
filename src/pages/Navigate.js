@@ -1,28 +1,29 @@
 import React, {Component} from 'react';
-import {View, Text, Linking} from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import {View, Text, Linking, Image} from 'react-native';
+import MapView, { PROVIDER_GOOGLE, Marker , Polyline} from 'react-native-maps';
  
 export default class Navigate extends Component{
     constructor(){
         super();
         this.state={
             region:{
-                latitude:37.562087,
-                longitude:127.035192,
+                latitude:35.891425,
+                longitude:128.611994,
                 // 얼마의 위도경도 차이까지 지도에 표시되는가 (zoom 설정)
-                latitudeDelta:0.009,
-                longitudeDelta:0.004,
+                latitudeDelta:0.01,
+                longitudeDelta:0.01,
             },
             markers:[{
-                latlng:{latitude:37.562516, longitude:127.035679},
-                title:"희망약국",
-                description:"왕십리에 있는 약국"
+                latlng:{latitude:35.890425, longitude:128.611994},
+                title:"경북대학교 본관",
+                description:"경북대학교의 중심"
             },
             {
-                latlng:{latitude:37.562516, longitude:127.037},
-                title:"희망약국2",
-                description:"왕십리에 있는 약국"
+                latlng:{latitude:35.890425, longitude:128.611995},
+                title:"경북대학교 어딘가",
+                description:"경북대학교 어딘가"
             }],
+            
         }
  
     }
@@ -52,10 +53,35 @@ export default class Navigate extends Component{
                                     title={marker.title}
                                     description={marker.description}
                                     key={index}
-                                    image={require('../images/marker.png')}>
+                                    ><Image
+                                        source={require('../images/marker.png')}
+                                        style={{width: 40, height: 40}}
+                                        resizeMode="contain">
+                                    </Image>
                                 </Marker>
                             })
                         }
+
+                        <Polyline
+                            coordinates={[
+                                { latitude:35.890425, longitude:128.611994 },
+                                { latitude:35.890325, longitude:128.610994 },
+                                { latitude:35.890725, longitude:128.611894 },
+                                { latitude:35.890625, longitude:128.611794 },
+                                { latitude:35.891425, longitude:128.621994 },
+                                { latitude:35.889425, longitude:128.612994 },
+                            ]}
+                            strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
+                            strokeColors={[
+                                '#7F0000',
+                                '#00000000', // no color, creates a "long" gradient between the previous and next coordinate
+                                '#B24112',
+                                '#E5845C',
+                                '#238C23',
+                                '#7F0000'
+                            ]}
+                            strokeWidth={6}
+                        />
                 </MapView>
             </View>
         );

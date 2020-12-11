@@ -103,12 +103,11 @@ const SearchList = () =>{
 
   const getItem = (item) => {
     // Function for click on an item
-  
     Alert.alert('Id : ' + item.id + ' Title : ' + item.title + '를 선택하시겠습니까?');
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1,  backgroundColor: '#A6A6A6'}}>
       <View style={modalStyles.container}>
         <SearchBar
           round

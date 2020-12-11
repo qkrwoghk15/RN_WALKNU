@@ -8,8 +8,10 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import Navigate from './Navigate';
 import TimeTable from './TimeTable';
+import Cite from '../components/Cite'
 
 const { UIManager } = NativeModules;
 const Stack = createStackNavigator();
@@ -35,6 +37,10 @@ function HomeScreen({ navigation }) {
             <Text style={styles.buttonText}>시간표</Text>
           </View>
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.citebox}>
+        <Cite></Cite>
       </View>
     </View>
   );
@@ -72,7 +78,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   box: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'center',
   },
   title: {
@@ -85,7 +91,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   buttonbox: {
-    flex: 1,
+    flex: 2,
     flexDirection: 'row'
   },
   button: {
@@ -105,4 +111,7 @@ const styles = StyleSheet.create({
     color: '#F2F2F2',
     fontWeight: 'bold',
   },
+  citebox: {
+    flex:1
+  }
 });

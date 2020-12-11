@@ -26,6 +26,7 @@
     "react-native-elements": "3.0.0-alpha.1",
     "react-native-gesture-handler": "1.9.0",
     "react-native-maps": "0.27.1",
+    "react-native-material-menu": "1.2.0",
     "react-native-modal-wrapper": "3.1.1",
     "react-native-modalize": "2.0.6",
     "react-native-nmap": "0.0.55",

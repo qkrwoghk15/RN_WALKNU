@@ -33,7 +33,6 @@ export default class Navigate extends Component{
                     style={{flex:1,}}
                     initialRegion={this.state.region}
                     provider={PROVIDER_GOOGLE}
-                    customMapStyle={mapStyle}
                     onRegionChange={this.onRegionChange}
                 >
                         {/* 마커 추가 */}

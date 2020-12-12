@@ -1,5 +1,5 @@
 import React, { Component, useRef,  useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert, FlatList, Dimensions, Button} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert, FlatList, Dimensions, Button, ScrollView} from 'react-native';
 import { Table, TableWrapper,Col, Cols, Cell, Row, Rows } from 'react-native-table-component';
 import RBSheet from "react-native-raw-bottom-sheet";
 import { SearchBar } from 'react-native-elements';
@@ -7,7 +7,6 @@ import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-vie
 import Modal from 'react-native-modal';
 
 import PopMap from '../components/PopMap';
-import { render } from 'react-dom';
 
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 ////////////////////////////////////////////////// Modal Screen //////////////////////////////////////////////////
@@ -162,20 +161,20 @@ const BottomSwipeButton = () => {
       </TouchableOpacity>
 
       <RBSheet
-            ref = {modalizeRef}
-            height = {780}
-            animationType = "slide"
-            closeOnDragDown = {true}
-            closeOnPressMask = {true}
-            dragFromTopOnly = {true}
-            customStyles={{
-              wrapper: {
-                backgroundColor: "transparent"
-              },
-              draggableIcon: {
-                backgroundColor: "#000"
-              }
-            }}
+          ref = {modalizeRef}
+          height = {780}
+          animationType = "slide"
+          closeOnDragDown = {true}
+          closeOnPressMask = {true}
+          dragFromTopOnly = {true}
+          customStyles={{
+            wrapper: {
+              backgroundColor: "transparent"
+            },
+            draggableIcon: {
+              backgroundColor: "#000"
+            }
+          }}
         >
           <SearchList></SearchList>
       </RBSheet>
@@ -183,80 +182,96 @@ const BottomSwipeButton = () => {
   );
 }
 ////////////////////////////////////////////////// Modal Button //////////////////////////////////////////////////
-export default class TimeTable extends Component {
-  constructor(props) {
-    super(props);
-    const elementButton = (value) => (
-      <>
-        <TouchableOpacity onPress={() => this.toggleModal}>
-          <View style={styles.btn}>
-            <Text style={styles.btnText}>{value}</Text>
-          </View>
-        </TouchableOpacity>
-      </>
-    );
-
-    this.state = {
+class ElementButton extends Component{
+  constructor(props){
+    super();
+    this.state ={
       isModalVisible: false,
-      tableTime: [['9:00-'], ['10:30-'], ['12:00-'], ['13:30-'], ['15:00-'], ['16:30-'], ['18:00-']],
-      tableHead: [elementButton('월'), elementButton('화'), elementButton('수'), elementButton('목'), elementButton('금')],
+      value: props.value,
     }
   }
 
   toggleModal = () => {
     this.setState({isModalVisible: !this.state.isModalVisible});
   }
+
+  render(){
+    return(
+      <>
+        <TouchableOpacity onPress={() => this.toggleModal}>
+          <View style={styles.btn}>
+            <Text style={styles.btnText}>{this.state.value}</Text>
+          </View>
+        </TouchableOpacity>
+
+        <Modal isVisible={this.state.isModalVisible}>
+          <View>
+            <Text>요일</Text>
+            <Button title="Hide modal" onPress={this.toggleModal} />
+          </View>
+        </Modal>
+      </>
+    )
+  }
+}
+
+export default class TimeTable extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      tableTime: [['8:00'], ['8:30'], ['09:00'], ['09:30'], ['10:00'], ['10:30'], ['11:00'], ['11:30'], ['12:00'], ['12:30'], ['13:00']],
+      tableHead: [<ElementButton value='월'/>, <ElementButton value='화'/>, <ElementButton value='수'/>, <ElementButton value='목'/>, <ElementButton value='금'/>],
+    }
+  }
   
   render() {
     const state = this.state;
 
+    for(let i=0; i<28; i+=1){
+        var time = 8, min = 00;
+        this.state.tableTime.push(`${time<10? `0${time}` : `{time}`}:${min}`)
+    }
+
     const tableData = [];
-    for (let i = 0; i < 7; i += 1) {
-      const rowData = [];
-      for (let j = 0; j < 5; j += 1) {
-        rowData.push(`${i}${j}`);
+    for (let i = 0; i < 5; i += 1) {
+      const colData = [];
+      colData.push(state.tableHead[i]);
+      for (let j = 0; j < 7; j += 1) {
+        colData.push(`${i}${j}`);
       }
-      tableData.push(rowData);
+      tableData.push(colData);
     }
 
     return (
       <View style={styles.container}>
-        <View style={{flex: 2, padding: 10, paddingTop: 30, flexDirection: 'row', alignItems:'flex-start'}}>
-          <Table style={{flexDirection: 'row'}} borderStyle={{borderWidth: 1}}>
-            <TableWrapper style={{width: 80}}>
-              <Cell data="" style={styles.singleHead}/>
-              <TableWrapper style={{flexDirection: 'row'}}>
-                <Col data={['오전', '오후']} style={styles.head} heightArr={[120, 300]} textStyle={styles.btnText} />
-                <Col data={state.tableTime} style={[styles.head]} heightArr={[60, 60, 60, 60, 60, 60, 60, 60]} textStyle={styles.timeText}></Col>
+        <ScrollView vertical={true}>
+          <View style={{flex: 9, padding: 10, paddingTop: 30, flexDirection: 'row', alignItems:'flex-start'}}>
+            <Table style={{flexDirection: 'row'}} borderStyle={{borderWidth: 1}}>
+              <TableWrapper style={{width: 40}}>
+                <Cell data="" style={styles.singleHead}/>
+                <TableWrapper style={{flexDirection: 'row'}}>
+                  <Col data={state.tableTime} style={[styles.head]} heightArr={[60, 60, 60, 60, 60, 60, 60, 60]} textStyle={styles.timeText}></Col>
+                </TableWrapper>
               </TableWrapper>
-            </TableWrapper>
 
-            <TableWrapper style={{flex:1, backgroundColor: '#404040'}}>
-              <Row data={state.tableHead} flex={1} height={60} style={styles.head} textStyle={styles.text} />
-              {
-                tableData.map((rowData, index) => (
-                  <Row
-                    key={index}
-                    data={rowData}
-                    flex={1}
-                    height={60}
-                    style={[styles.row, index%2 && {backgroundColor: '#A6A6A6'}]}
-                    textStyle={styles.text}
-                  />
-                ))
-              }
-            </TableWrapper>
-          </Table>
-        </View>
-
-        <View>
-          <Modal isVisible={this.state.isModalVisible}>
-            <View style={{ flex: 1 }}>
-              <Text>`요일`</Text>
-              <Button title="Hide modal" onPress={this.toggleModal} />
-            </View>
-          </Modal>
-        </View>
+              <TableWrapper style={{flex:1, flexDirection: 'row', backgroundColor: '#404040'}}>
+                {
+                  tableData.map((colData, index) => (
+                    <Col
+                      key={index}
+                      data={colData}
+                      flex={1}
+                      height={60}
+                      style={[styles.row]}
+                      textStyle={styles.text}
+                    />
+                  ))
+                }
+              </TableWrapper>
+            </Table>
+          </View>
+        </ScrollView>
 
         <View style={{flex: 1, flexDirection:'column-reverse', paddingBottom: 50}}>
           <BottomSwipeButton></BottomSwipeButton>
@@ -274,15 +289,15 @@ const styles = StyleSheet.create({
     padding: 0,
     backgroundColor: '#404040',
   },
-  singleHead: { width: 80, height: 60, backgroundColor: '#A6A6A6' },
+  singleHead: { width: 40, height: 60, backgroundColor: '#A6A6A6' },
   head: { backgroundColor: '#A6A6A6' },
   title: { backgroundColor: '#737373' },
-  timeText: { marginRight: 6, textAlign:'right', fontSize: 10 },
+  timeText: { marginRight: 6, textAlign:'center', fontSize: 8, flexWrap: 'nowrap' },
   text: { textAlign: 'center'},
 
   btn: { height: 58, backgroundColor: '#A6A6A6', borderRadius: 2 , justifyContent: 'center'},
   btnText: { textAlign: 'center', fontSize: 25, fontWeight: '600', fontFamily: "Cochin" },
-  row: {backgroundColor: '#737373' },
+  row: {backgroundColor: '#A6A6A6' },
 
   modalBtn: {
     width: 150,

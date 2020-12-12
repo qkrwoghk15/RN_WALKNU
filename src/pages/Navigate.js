@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
-import {View, Text, Linking, Image} from 'react-native';
+import {View, Text, Linking, Image, Input} from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker , Polyline} from 'react-native-maps';
- 
+import Geolocation from 'react-native-geolocation-service';
+
 export default class Navigate extends Component{
     constructor(){
         super();
+        
         this.state={
             region:{
                 latitude:35.891425,
@@ -29,6 +31,9 @@ export default class Navigate extends Component{
     render(){
         return(
             <View style={{flex:1, padding:0,}}>
+                <View>
+                    
+                </View>
                 <MapView 
                     style={{flex:1,}}
                     initialRegion={this.state.region}
@@ -89,5 +94,25 @@ export default class Navigate extends Component{
  
     clickCallout=()=>{
         Linking.openURL('http://www.mrhi.or.kr');
+    }
+
+    async requestLocationPermission(){
+            
+        try{
+            // 퍼미션 요청 다이얼로그 보이기
+            const granted=await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+ 
+            if(granted== PermissionsAndroid.RESULTS.GRANTED){
+                alert('위치정보 사용을 허가하셨습니다.');
+            }else{
+                alert('위치정보 사용을 거부하셨습니다.\n앱의 기능사용이 제한됩니다.');
+            }
+ 
+        }catch(err){alert('퍼미션 작업 에러');}
+ 
+    }
+    //화면이 시작될때 퍼미션 받도록 라이프사이클 메소드 이용
+    async componentDidMount(){
+       await this.requestLocationPermission()
     }
 }

@@ -220,17 +220,17 @@ export default class TimeTable extends Component {
     super(props);
 
     this.state = {
-      tableTime: [['8:00'], ['8:30'], ['09:00'], ['09:30'], ['10:00'], ['10:30'], ['11:00'], ['11:30'], ['12:00'], ['12:30'], ['13:00']],
+      time: 8,
+      tableTime: [],
       tableHead: [<ElementButton value='월'/>, <ElementButton value='화'/>, <ElementButton value='수'/>, <ElementButton value='목'/>, <ElementButton value='금'/>],
     }
   }
   
   render() {
     const state = this.state;
-
     for(let i=0; i<28; i+=1){
-        var time = 8, min = 00;
-        this.state.tableTime.push(`${time<10? `0${time}` : `{time}`}:${min}`)
+        this.state.tableTime.push((state.time<10? `0${state.time}` : `${state.time}`) + (!(i%2)? ":00" : ":30"))
+        if(i%2) state.time += 1
     }
 
     const tableData = [];

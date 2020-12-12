@@ -1,10 +1,13 @@
 import React, { Component, useRef,  useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert, FlatList, Dimensions} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert, FlatList, Dimensions, Button} from 'react-native';
 import { Table, TableWrapper,Col, Cols, Cell, Row, Rows } from 'react-native-table-component';
 import RBSheet from "react-native-raw-bottom-sheet";
 import { SearchBar } from 'react-native-elements';
 import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
+import Modal from 'react-native-modal';
+
 import PopMap from '../components/PopMap';
+import { render } from 'react-dom';
 
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 ////////////////////////////////////////////////// Modal Screen //////////////////////////////////////////////////
@@ -180,31 +183,28 @@ const BottomSwipeButton = () => {
   );
 }
 ////////////////////////////////////////////////// Modal Button //////////////////////////////////////////////////
-
-export default class Navigate extends Component {
+export default class TimeTable extends Component {
   constructor(props) {
     super(props);
     const elementButton = (value) => (
-      <TouchableOpacity onPress={() => this._alertIndex(value)}>
-        <View style={styles.btn}>
-          <Text style={styles.btnText}>{value}</Text>
-        </View>
-      </TouchableOpacity>
+      <>
+        <TouchableOpacity onPress={() => this.toggleModal}>
+          <View style={styles.btn}>
+            <Text style={styles.btnText}>{value}</Text>
+          </View>
+        </TouchableOpacity>
+      </>
     );
 
-    const bgcolor = (num) =>{
-      if (num == 60) return '#404040'
-      else return 'white'
-    }
- 
     this.state = {
+      isModalVisible: false,
       tableTime: [['9:00-'], ['10:30-'], ['12:00-'], ['13:30-'], ['15:00-'], ['16:30-'], ['18:00-']],
       tableHead: [elementButton('월'), elementButton('화'), elementButton('수'), elementButton('목'), elementButton('금')],
     }
   }
- 
-  _alertIndex(value) {
-    Alert.alert(`${value}요일`);
+
+  toggleModal = () => {
+    this.setState({isModalVisible: !this.state.isModalVisible});
   }
   
   render() {
@@ -226,8 +226,8 @@ export default class Navigate extends Component {
             <TableWrapper style={{width: 80}}>
               <Cell data="" style={styles.singleHead}/>
               <TableWrapper style={{flexDirection: 'row'}}>
-                <Col data={['오전', '오후']} style={styles.head} heightArr={[80, 200]} textStyle={styles.btnText} />
-                <Col data={state.tableTime} style={[styles.head]} heightArr={[40, 40, 40, 40, 40, 40, 40, 40]} textStyle={styles.timeText}></Col>
+                <Col data={['오전', '오후']} style={styles.head} heightArr={[120, 300]} textStyle={styles.btnText} />
+                <Col data={state.tableTime} style={[styles.head]} heightArr={[60, 60, 60, 60, 60, 60, 60, 60]} textStyle={styles.timeText}></Col>
               </TableWrapper>
             </TableWrapper>
 
@@ -239,7 +239,7 @@ export default class Navigate extends Component {
                     key={index}
                     data={rowData}
                     flex={1}
-                    height={40}
+                    height={60}
                     style={[styles.row, index%2 && {backgroundColor: '#A6A6A6'}]}
                     textStyle={styles.text}
                   />
@@ -247,6 +247,15 @@ export default class Navigate extends Component {
               }
             </TableWrapper>
           </Table>
+        </View>
+
+        <View>
+          <Modal isVisible={this.state.isModalVisible}>
+            <View style={{ flex: 1 }}>
+              <Text>`요일`</Text>
+              <Button title="Hide modal" onPress={this.toggleModal} />
+            </View>
+          </Modal>
         </View>
 
         <View style={{flex: 1, flexDirection:'column-reverse', paddingBottom: 50}}>

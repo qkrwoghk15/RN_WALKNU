@@ -9,7 +9,6 @@ export default class Navigate extends Component{
             region:{
                 latitude:35.891425,
                 longitude:128.611994,
-                // 얼마의 위도경도 차이까지 지도에 표시되는가 (zoom 설정)
                 latitudeDelta:0.01,
                 longitudeDelta:0.01,
             },
@@ -23,7 +22,6 @@ export default class Navigate extends Component{
                 title:"경북대학교 어딘가",
                 description:"경북대학교 어딘가"
             }],
-            
         }
  
     }
@@ -33,8 +31,11 @@ export default class Navigate extends Component{
             <View style={{flex:1, padding:0,}}>
                 <MapView 
                     style={{flex:1,}}
+                    initialRegion={this.state.region}
                     provider={PROVIDER_GOOGLE}
-                    initialRegion={this.state.region}>
+                    customMapStyle={mapStyle}
+                    onRegionChange={this.onRegionChange}
+                >
                         {/* 마커 추가 */}
                         <Marker
                             coordinate={this.state.region}
@@ -88,7 +89,6 @@ export default class Navigate extends Component{
     }
  
     clickCallout=()=>{
-        // 특정 URL의 웹문서를 디바리스의 웹브라우저를 통해 열기
         Linking.openURL('http://www.mrhi.or.kr');
     }
 }

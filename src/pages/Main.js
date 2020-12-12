@@ -22,6 +22,7 @@ UIManager.setLayoutAnimationEnabledExperimental &&
 function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
+      <View style={{flex:1}}></View>
       <View style={styles.box}>
         <Text style={styles.title}> WALKNU </Text>
       </View>
@@ -38,9 +39,9 @@ function HomeScreen({ navigation }) {
           </View>
         </TouchableOpacity>
       </View>
-
+      <View style={{flex:1}}></View>
       <View style={styles.citebox}>
-        <Cite></Cite>
+          <Cite style={styles.citebtn}></Cite>
       </View>
     </View>
   );
@@ -73,12 +74,14 @@ export default class Main extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
     backgroundColor: '#404040',
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'center',
   },
   box: {
-    flex: 2,
+    flex: 3,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
@@ -91,8 +94,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   buttonbox: {
-    flex: 2,
-    flexDirection: 'row'
+    flex: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 30,
   },
   button: {
     width: 120,
@@ -100,7 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#737373',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    margin: 25,
+    margin: 10,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20
@@ -112,6 +118,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   citebox: {
-    flex:1
-  }
+    flex:1,
+    paddingRight: 30,
+    paddingBottom: 30,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+  },
 });

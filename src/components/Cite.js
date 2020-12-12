@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet,Dimensions, Linking } from 'react-native';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+
+const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export default class Cite extends React.PureComponent {
   _menu = null;
@@ -19,20 +21,28 @@ export default class Cite extends React.PureComponent {
 
   render() {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#737373' }}>
+      <View style={styles.container}>
         <Menu
           ref={this.setMenuRef}
-          button={<Text onPress={this.showMenu}>Show menu</Text>}
+          button={<Text onPress={this.showMenu} style={styles.menutext}>추천 사이트</Text>}
         >
-          <MenuItem onPress={this.hideMenu}>Menu item 1</MenuItem>
-          <MenuItem onPress={this.hideMenu}>Menu item 2</MenuItem>
-          <MenuItem onPress={this.hideMenu} disabled>
-            Menu item 3
+          <MenuItem onPress={this.hideMenu} style={styles.menubtn}>
+            <Text onPress={() => Linking.openURL('http://knu.ac.kr')}>경북대학교 홈페이지</Text>
           </MenuItem>
-          <MenuDivider />
-          <MenuItem onPress={this.hideMenu}>Menu item 4</MenuItem>
+          <MenuItem onPress={this.hideMenu} style={styles.menubtn}>
+            <Text onPress={() => Linking.openURL('http://computer.knu.ac.kr')}>경북대학교 컴퓨터학부</Text>
+          </MenuItem>
+          <MenuItem onPress={this.hideMenu} style={styles.menubtn}>
+            <Text onPress={() => Linking.openURL('http://yes.knu.ac.kr')}>경북대학교 yes통합시스템</Text>
+          </MenuItem>
         </Menu>
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {width: 100, alignItems: 'center', justifyContent: 'center', backgroundColor: '#464646', borderRadius: 10,},
+  menutext: {fontSize: 15, color: 'white', padding: 10},
+  menubtn: {height: 40, backgroundColor: '#A6A6A6',}
+})

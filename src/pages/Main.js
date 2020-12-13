@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   View,
+  ImageBackground,
+  Image,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -24,22 +26,35 @@ function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <View style={{flex:1}}></View>
       <View style={styles.box}>
-        <Text style={styles.title}> WALKNU </Text>
+        <ImageBackground source={require('../images/logo.png')} style={imgStyles.image}>
+          <Text style={styles.title}> WALKNU </Text>
+        </ImageBackground>        
       </View>
 
       <View style={styles.buttonbox}>
-        <TouchableOpacity onPress={() => navigation.navigate('Navigate')}>
-          <View style={styles.button}>
-            <Text style={styles.buttonText}>길찾기</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('TimeTable')}>
-          <View style={styles.button}>
-            <Text style={styles.buttonText}>시간표</Text>
-          </View>
-        </TouchableOpacity>
+        <View style={imgStyles.container}>
+          <TouchableOpacity onPress={() => navigation.navigate('Navigate')} style={{width: '60%', height: '60%'}}>
+            <View>
+              <ImageBackground source={require('../images/map.png')} style={[imgStyles.image, {width: '120%'}]}>
+                <Text style={[imgStyles.text, {width: '120%'}]}>길찾기</Text>
+              </ImageBackground>
+            </View>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={imgStyles.container}>
+          <TouchableOpacity onPress={() => navigation.navigate('TimeTable')} style={{width: '60%', height: '60%'}}>
+            <View>
+              <ImageBackground source={require('../images/table.png')} style={imgStyles.image}>
+                <Text style={imgStyles.text}>시간표</Text>
+              </ImageBackground>
+            </View>
+          </TouchableOpacity>
+        </View>        
       </View>
+
       <View style={{flex:1}}></View>
+
       <View style={styles.citebox}>
           <Cite style={styles.citebtn}></Cite>
       </View>
@@ -86,7 +101,7 @@ const styles = StyleSheet.create({
   },
   title: {
     height:100,
-    marginTop: 100,
+    marginTop: 120,
     color: '#fff',
     textAlign: 'auto',
     fontSize: 70,
@@ -96,32 +111,41 @@ const styles = StyleSheet.create({
   buttonbox: {
     flex: 3,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 30,
-  },
-  button: {
-    width: 120,
-    height: 120,
-    backgroundColor: '#737373',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    margin: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20
-  },
-  buttonText: {
-    fontSize: 25,
-    textAlign: 'center',
-    color: '#F2F2F2',
-    fontWeight: 'bold',
+    alignItems: 'stretch',
+    justifyContent: 'space-around',
+    padding: 0,
   },
   citebox: {
     flex:1,
-    paddingRight: 30,
+    paddingRight: 10,
     paddingBottom: 30,
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
   },
+});
+
+const imgStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: "contain",
+    justifyContent: "center",
+    alignItems: "center",
+    
+  },
+  text: {
+    width: '140%',
+    padding: 3,
+    color: "white",
+    fontSize: 42,
+    fontWeight: "bold",
+    textAlign: "center",
+    backgroundColor: "#000000a0"
+  }
 });

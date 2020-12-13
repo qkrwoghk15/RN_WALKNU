@@ -40,3 +40,6 @@ function convertDay(day){
     if(day == '금') return '4'
 }
 ///////////////////////////////////////////////////////// convert to String time from Json /////////////////////////////////////////////////////////
+export function convertToRealTime (strTime){
+    
+}

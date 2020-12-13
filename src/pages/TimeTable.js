@@ -5,7 +5,6 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import { SearchBar } from 'react-native-elements';
 import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
 import Modal from 'react-native-modal';
-import {Picker} from '@react-native-picker/picker';
 
 import PopMap from '../components/PopMap';
 import {convertStrTime} from '../components/functions'

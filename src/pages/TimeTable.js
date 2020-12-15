@@ -36,6 +36,7 @@ const storeData = async (value) => {
     // saving error
   }
 }
+
 ////////////////////////////////////////////////// Modal Button //////////////////////////////////////////////////
 const BottomSwipeButton = (props) => {
   const modalizeRef = useRef();
@@ -240,7 +241,7 @@ const SearchList = (props) => {
     <View style={{ flex: 1,  backgroundColor: '#A6A6A6'}}>
       <View style={modalStyles.container}>
           <SearchBar
-            lightTheme='light'
+            lightTheme= {true}
             searchIcon={{ size: 24 }}
             onChangeText={(text) => searchFilterFunction(text)}
             onClear={(text) => searchFilterFunction('')}
@@ -248,7 +249,7 @@ const SearchList = (props) => {
             value={search}
           />
 
-        <View style={{height:30, flexDirection: 'row', paddingLeft:20, alignItems:'center', borderBottomWidth: 1}}>
+        <View style={{height:30, flexDirection: 'row', paddingLeft: 20, alignItems:'center', borderBottomWidth: 1}}>
           <Text style={{height:30, lineHeight:30}}>학과: </Text>
           <TouchableOpacity onPress={() => setModalVisible(!isModalVisible)}>
             <View style={modalStyles.pribtn}>
@@ -261,12 +262,12 @@ const SearchList = (props) => {
             <View style={[modalStyles.textbtn, {alignItems: 'center', marginTop:30}]}>
               <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{flexDirection: 'row'}}>
                 {
-                  indexAry.map((key, i)=>(
-                    <TouchableOpacity onPress={() => setIndexing(i)}>
+                  indexAry.map((value, index)=>(
+                    <TouchableOpacity onPress={() => setIndexing(index)}>
                       <Text
-                        style={[modalStyles.indextext, (key==indexAry[indexing])&&{color: 'red', fontSize: 35}]}
-                        key={key}
-                        >{key}</Text>
+                        style={[modalStyles.indextext, (value==indexAry[indexing])&&{color: 'red', fontSize: 35}]}
+                        key={value}
+                        >{value}</Text>
                     </TouchableOpacity>
                   ))
                 }
@@ -392,8 +393,8 @@ class ElementButton extends Component{
   toggleModal = (visible) => {
     this.setState({isModalVisible: !visible});
   }
-
   render(){
+    const day =['월', '화', '수', '목', '금']
     return(
       <>
         <TouchableOpacity onPress={() => this.toggleModal(this.state.isModalVisible)}>
@@ -408,7 +409,8 @@ class ElementButton extends Component{
         </TouchableOpacity>
 
         <Modal isVisible={this.state.isModalVisible} style={{marginTop:'80%'}}>
-          <ModalMap enrollAry = {this.props.enrollAry}></ModalMap>
+          <ModalMap enrollAry = {this.props.enrollAry.filter(lecture => day[parseInt(lecture.strTime.charAt(0))]==this.state.value)
+                                  .concat(this.props.enrollAry.filter(lecture => day[parseInt(lecture.strTime.charAt(5))]==this.state.value))}></ModalMap>
             <View style={{flex: 1, alignItems: 'flex-end'}}>
               <TouchableOpacity onPress={this.toggleModal} style={{marginTop:10, marginRight:5}}>
                 <Image source={require('../images/X.png')}  style={{resizeMode: 'contain', width: 30, height: 30}} />
@@ -618,11 +620,11 @@ class TimeTable extends Component {
               isVisible={this.state.confirmVisible}
               deviceWidth={SCREEN_WIDTH}
               deviceHeight={SCREEN_HEIGHT}
-              style={{backgroundColor: 'white', margin: '10%', marginTop: '85%', marginBottom: '85%'}}>
+              style={{backgroundColor: 'white', margin: '10%', marginTop: SCREEN_HEIGHT*0.4, marginBottom: SCREEN_HEIGHT*0.4}}>
               <View style={{flex: 1}}>
                 <ImageBackground  source={require("../images/modalBack.png")} blurRadius={5} style={MyModalStyles.container}>
                   <View style={MyModalStyles.overlay}>
-                    <View style={{height:'94%', justifyContent: 'center', alignItems: 'baseline'}}>
+                    <View style={{height:'95%', justifyContent: 'center', alignItems: 'baseline'}}>
                       <Text style={[MyModalStyles.message, {paddingTop: 40}]}>{`${this.state.message}`}</Text>
                     </View>
                     <View style={{flexDirection: 'row', felx:1, justifyContent: 'space-around'}}>
@@ -654,8 +656,16 @@ class TimeTable extends Component {
 export default function TimeTableStack(){
   return(
     <TimeTableTab.Navigator tabBar={props=> <MyTabBar {...props} />}>
-      <TimeTableTab.Screen name="시간표" component={TimeTable}/>
-      <TimeTableTab.Screen name="지도" component={TimeMap}/>
+      <TimeTableTab.Screen name="시간표" component={TimeTable} listeners={({ navigation, route }) => ({
+                            tabPress: e => {
+                              navigation.navigate('시간표', {test: (route.params?.test!=0 ? 0: route.params?.test+1)});
+                            },
+                          })}/>
+      <TimeTableTab.Screen name="지도" component={TimeMap} listeners={({ navigation, route }) => ({
+                            tabPress: e => {
+                              navigation.navigate('지도', {test: (route.params?.test!=0 ? 0: route.params?.test+1)});
+                            },
+                          })}/>
    </TimeTableTab.Navigator>
   )
 }

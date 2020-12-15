@@ -29,9 +29,9 @@ export default function MyTabBar({ state, descriptors, navigation }) {
             canPreventDefault: true,
           });
 
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
-          }
+          // if (!isFocused && !event.defaultPrevented) {
+          //   navigation.navigate(route.name);
+          // }
         };
 
         const onLongPress = () => {

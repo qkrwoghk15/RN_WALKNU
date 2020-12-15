@@ -9,14 +9,15 @@ import {
   Button, 
   ScrollView, 
   Image, ImageBackground, 
-  ActivityIndicator, Colors} from 'react-native';
-import { Table, TableWrapper,Col, Cell, Row } from 'react-native-table-component';
+  ActivityIndicator, } from 'react-native';
+import { Table, TableWrapper,Col, Cell } from 'react-native-table-component';
 import RBSheet from "react-native-raw-bottom-sheet";
 import { SearchBar } from 'react-native-elements';
-import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
+import Popover from 'react-native-popover-view';
 import Modal from 'react-native-modal';
 import HighlightText from '@sanar/react-native-highlight-text';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import PopMap from '../components/PopMap';
 import ModalMap from '../components/ModalMap';
@@ -28,18 +29,13 @@ import TimeMap from './TimeMap'
 const TimeTableTab = createBottomTabNavigator();
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 
-var RNFS = require('react-native-fs');
-var path = RNFS.DocumentDirectoryPath + '/enroll.txt';
-function WriteEnroll(str){
-  RNFS.writeFile(path, str, 'utf8')
-  .then((success) => {
-    console.log('FILE WRITTEN!');
-  })
-  .catch((err) => {
-    console.log(err.message);
-  });
+const storeData = async (value) => {
+  try {
+    await AsyncStorage.setItem('@enrollData', value)
+  } catch (e) {
+    // saving error
+  }
 }
-
 ////////////////////////////////////////////////// Modal Button //////////////////////////////////////////////////
 const BottomSwipeButton = (props) => {
   const modalizeRef = useRef();
@@ -244,6 +240,7 @@ const SearchList = (props) => {
     <View style={{ flex: 1,  backgroundColor: '#A6A6A6'}}>
       <View style={modalStyles.container}>
           <SearchBar
+            lightTheme='light'
             searchIcon={{ size: 24 }}
             onChangeText={(text) => searchFilterFunction(text)}
             onClear={(text) => searchFilterFunction('')}
@@ -268,7 +265,7 @@ const SearchList = (props) => {
                     <TouchableOpacity onPress={() => setIndexing(i)}>
                       <Text
                         style={[modalStyles.indextext, (key==indexAry[indexing])&&{color: 'red', fontSize: 35}]}
-                        key={i}
+                        key={key}
                         >{key}</Text>
                     </TouchableOpacity>
                   ))
@@ -285,7 +282,7 @@ const SearchList = (props) => {
                           <Text
                           onPress={() => setSelectedValue(key.subject)}
                           style={[modalStyles.textbtn, {textAlign: 'center'}]}
-                          key={i}
+                          key={key.cid}
                           >{key.subject}</Text>
                         )
                       }
@@ -309,7 +306,7 @@ const SearchList = (props) => {
 
           <FlatList
             data={filteredDataSource}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item, index) => item.cid}
             ItemSeparatorComponent={ItemSeparatorView}
             renderItem={ItemView}
           />
@@ -337,9 +334,10 @@ const removeItem = (item, removeEnrollArr) =>
       );
 
 const Rect=(props) =>{
-  const color =['#262626', '#A6A198', '#A69472', '#73654D', '#D9D1C7'
-                ,'#665849', '#59524D', '#D8D1C7', '#BEB1A0', '#F5F7F9'
-                ,'#739FD9', '#77ABD9', '#ADC5D9', '#3B758C', '#025159'];
+  const color =['#E56C00', '#0000AA', '#00AAAA', '#A900AA', '#A90000', 
+                '#A95300', '#FC0000', '#0000FC', '#007D00', '#6C0071', 
+                '#23C52C', '#C52323', '#C523AE', '#005C9D', '#5353FC', 
+                '#003E00', '#3E003E', '#C54B23', '#23C589', '#5723C5'];
   if(props.item.colorNo==null)props.item.colorNo = parseInt(Math.random()*15);
   return(
     <TouchableOpacity 
@@ -365,13 +363,13 @@ const EnrollList=(props)=>{
   const lists = props.enrollArr.map(function(list, index){ 
     if(list.strTime.length==5)
       return (
-        <Rect time={list.strTime} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr} key={index}></Rect>
+        <Rect time={list.strTime} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr} ></Rect>
       )
     else 
       return (
         <>
-          <Rect time={list.strTime.substring(0,5)} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr} key={index}></Rect>
-          <Rect time={list.strTime.substring(5,list.strTime.length)} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr} key={index}></Rect>
+          <Rect time={list.strTime.substring(0,5)} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr}></Rect>
+          <Rect time={list.strTime.substring(5,list.strTime.length)} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr}></Rect>
         </>
       )
   }.bind(this))
@@ -457,8 +455,16 @@ class TimeTable extends Component {
   }
 
   //////////////////////////////////////////////////// time ////////////////////////////////////////////////////
-  componentDidMount() {
+  async componentDidMount() {
     this.interval = setInterval(this.tick, this.state.delay);
+    try {
+      const jsonValue = await AsyncStorage.getItem('@enrollData')
+      if(jsonValue!=null){
+        this.setState({enrollArr: JSON.parse(jsonValue)})
+      }
+    } catch(e) {
+        // error reading value
+    }
   }
   componentWillUnmount() {
     clearInterval(this.interval);
@@ -484,14 +490,12 @@ class TimeTable extends Component {
     this.setState({
       enrollArr: this.state.enrollArr.concat(item)
     })
-    WriteEnroll(JSON.stringify(this.state.enrollArr))
   }
 
   removeEnrollArr = (item) => {
     this.setState({
       enrollArr: this.state.enrollArr.filter(sub => sub.cname !== item.cname)
     })
-    WriteEnroll(JSON.stringify(this.state.enrollArr))
   }
 
   toggleModal(isConfirm){
@@ -503,7 +507,7 @@ class TimeTable extends Component {
     }
     else{
       if(this.state.message == "저장하시겠습니까?" && isConfirm){
-        //save function
+        storeData(JSON.stringify(this.state.enrollArr))
         this.setState({
           message: "저장되었습니다."
         })
@@ -518,6 +522,7 @@ class TimeTable extends Component {
 
   render() {
     const state = this.state;
+    this.props.navigation.setParam
     var temp = 8;
     const TimeArr = [],
         heightArr=[];
@@ -543,16 +548,16 @@ class TimeTable extends Component {
                         fontSize: 42,
                         fontWeight: "bold",
                         textAlign: "center",
-                        backgroundColor: "#000000a0"}}>{`${state.year}/${state.month}/${state.date}(${state.week[state.day]})`}</Text>
+                        backgroundColor: "#8C6C64a0"}}>{`${state.year}/${state.month}/${state.date}(${state.week[state.day]})`}</Text>
           <Text style={{color: "white",
                         textAlign: "center",
                         fontSize: 21,
-                        backgroundColor: "#000000a0"}}>{`${state.hours}시 ${state.min}분`}</Text>
+                        backgroundColor: "#8C6C64a0"}}>{`${state.hours}시 ${state.min}분`}</Text>
         </View>
         <View style={{flex: 7, padding: 10}}>
             <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
               <TableWrapper style={{flexDirection: 'row'}}>
-                <Cell data="" style={{width: 30, backgroundColor: '#A6A6A6'}}/>
+                <Cell data="" style={{width: 30, backgroundColor: 'white'}}/>
                 <TableWrapper style={{flex: 1, flexDirection: 'row'}}>
                   {
                     state.tableHead.map((value, index) => (
@@ -650,7 +655,7 @@ export default function TimeTableStack(){
   return(
     <TimeTableTab.Navigator tabBar={props=> <MyTabBar {...props} />}>
       <TimeTableTab.Screen name="시간표" component={TimeTable}/>
-      <TimeTableTab.Screen name="지도" component={TimeMap} />
+      <TimeTableTab.Screen name="지도" component={TimeMap}/>
    </TimeTableTab.Navigator>
   )
 }
@@ -661,21 +666,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'stretch',
     padding: 0,
-    backgroundColor: '#404040',
+    backgroundColor: '#F0EDE4',
   },
-  head: { flex: 1, backgroundColor: '#A6A6A6', alignItems: 'stretch'},
+  head: { flex: 1, backgroundColor: 'white', alignItems: 'stretch'},
   title: { flex: 1, backgroundColor: '#737373' },
   timeText: { flex: 1, textAlign:'right', fontSize: 8, flexWrap: 'nowrap'},
   text: { textAlign: 'center'},
 
-  btn: { height: 58, backgroundColor: '#A6A6A6', borderRadius: 2 , justifyContent: 'center'},
+  btn: { height: 58, backgroundColor: 'white', borderRadius: 2 , justifyContent: 'center'},
   btnText: { textAlign: 'center', fontSize: 25, fontWeight: '600', fontFamily: "Cochin" },
-  row: {backgroundColor: '#A6A6A6' },
+  row: {backgroundColor: 'white' },
 
   modalBtn: {
     width: 170,
     height: 50,
-    backgroundColor: '#737373',//f4511e
+    backgroundColor: '#8C6C64',//f4511e
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 40 
@@ -683,7 +688,7 @@ const styles = StyleSheet.create({
   modalBtnText: {
     fontSize: 25,
     textAlign: 'center',
-    color: '#fff',
+    color: '#E8DDBD',
     fontWeight: 'bold',
   },
   subText: {
@@ -710,7 +715,7 @@ const styles = StyleSheet.create({
 const modalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#A6A6A6',
+    backgroundColor: '#E1E8EE',
   },
   itemStyle: {
     flex: 9,
@@ -719,7 +724,7 @@ const modalStyles = StyleSheet.create({
   btn: { width: 50, height: 18, backgroundColor: '#78B7BB',  borderRadius: 20 },
   btnText: { textAlign: 'center', color: '#fff' },
 
-  pribtn: { width: 100, height: 25, backgroundColor: 'black',  borderRadius: 20 },
+  pribtn: { width: 100, height: 25, backgroundColor: '#8C6C64',  borderRadius: 20 },
   pribtnText: { textAlign: 'center', color: '#fff', lineHeight: 25 },
 
   popov: { width: SCREEN_WIDTH*4/5, height: SCREEN_HEIGHT/3 , padding: 5},

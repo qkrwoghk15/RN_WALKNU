@@ -1320,6 +1320,13 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
+"@react-native-async-storage/async-storage@1.13.2":
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.13.2.tgz#649f78527f16cd5a87071a888219ef7a35ef5c79"
+  integrity sha512-isTDvUApRJPVWFxV15yrQSOGqarX7cIedq/y4N5yWSnotf68D9qvDEv1I7rCXhkBDi0u4OJt6GA9dksUT0D3wg==
+  dependencies:
+    deep-assign "^3.0.0"
+
 "@react-native-community/cli-debugger-ui@^4.13.1":
   version "4.13.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-4.13.1.tgz#07de6d4dab80ec49231de1f1fbf658b4ad39b32c"
@@ -1894,6 +1901,11 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
+audit@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/audit/-/audit-0.0.6.tgz#fef17dd84af1dcd2a5633fd46d3b1adcb084bf3b"
+  integrity sha1-/vF92Erx3NKlYz/UbTsa3LCEvzs=
+
 auto-changelog@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/auto-changelog/-/auto-changelog-2.2.1.tgz#a031fbf1dfe140dda2ec8c77a524031478a0e933"
@@ -2016,6 +2028,11 @@ balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
+
+base-64@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/base-64/-/base-64-0.1.0.tgz#780a99c84e7d600260361511c4877613bf24f6bb"
+  integrity sha1-eAqZyE59YAJgNhURxId2E78k9rs=
 
 base64-js@^1.1.2, base64-js@^1.2.3:
   version "1.5.1"
@@ -3128,7 +3145,7 @@ expo-error-recovery@~1.3.0:
   dependencies:
     fbjs "1.0.0"
 
-expo-file-system@~9.2.0:
+expo-file-system@9.2.0, expo-file-system@~9.2.0:
   version "9.2.0"
   resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-9.2.0.tgz#e8efde36968a1e6d826236044a970e85bfe0aeee"
   integrity sha512-GsDf+E6e1WyYqyUiXbcWthLk7oVO+WDticnHUGAzb17hVCgxJhlUbRriwY3kBkQAX1mr+Hq9lkgJPIRbV197Fw==
@@ -3166,6 +3183,11 @@ expo-location@~9.0.0:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/expo-location/-/expo-location-9.0.1.tgz#adf93b8adf5e9dcf9570cba1d66c8e3831329156"
   integrity sha512-yl4V2IelxrjG1h3nshkyILwghysNJvvEuR4Of0U7oYAsBrT0cq8NxFuaDemRvqt9Yb19wVFNMoVtYFNpthcqpQ==
+
+expo-media-library@~9.2.1:
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/expo-media-library/-/expo-media-library-9.2.1.tgz#11583e40087d77cf16e70bb7db0048d2bd1938b5"
+  integrity sha512-A9AAGI1200P0oULoXA7U7wQ91zgPWl9GWo5H9EQvVDHp1ABX8tf2qTOad6Y0KotHYWVMIyfsVXzVYAbjJ9LxPQ==
 
 expo-notifications@~0.7.2:
   version "0.7.2"
@@ -3467,6 +3489,15 @@ find-up@^4.1.0:
   dependencies:
     locate-path "^5.0.0"
     path-exists "^4.0.0"
+
+fix@0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/fix/-/fix-0.0.6.tgz#07e593a27414ddc486ee52d50f9c8e09885a0305"
+  integrity sha1-B+WTonQU3cSG7lLVD5yOCYhaAwU=
+  dependencies:
+    pipe "0.0.2"
+    underscore "1.1.6"
+    underscore.string "1.1.4"
 
 follow-redirects@^1.10.0:
   version "1.13.0"
@@ -5457,6 +5488,11 @@ pify@^4.0.1:
   resolved "https://registry.yarnpkg.com/pify/-/pify-4.0.1.tgz#4b2cd25c50d598735c50292224fd8c6df41e3231"
   integrity sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==
 
+pipe@0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/pipe/-/pipe-0.0.2.tgz#a16fe6fc019d75bd987c4928a67e1e50e4f5b44f"
+  integrity sha1-oW/m/AGddb2YfEkopn4eUOT1tE8=
+
 pirates@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/pirates/-/pirates-4.0.1.tgz#643a92caf894566f91b2b986d2c66950a8e2fb87"
@@ -5758,6 +5794,11 @@ react-native-complete-flatlist@2.0.3:
   dependencies:
     react-native-highlight-words "git+https://github.com/fattahmuhyiddeen/react-native-highlight-words.git#master"
 
+react-native-dropdown-searchable@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-dropdown-searchable/-/react-native-dropdown-searchable-1.0.1.tgz#e56aae4de6e5e5319cb46dfb150ccd93074cd378"
+  integrity sha512-Zg4iICEapAU380dHoA2BPPkFjwI2fy4UTYkkjo6swRJsgHt0L9LJ6+rFzak8SgVT5Gl2rKx5XB7AOKSen9LqLQ==
+
 react-native-dynamically-selected-picker@2.0.1, react-native-dynamically-selected-picker@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/react-native-dynamically-selected-picker/-/react-native-dynamically-selected-picker-2.0.1.tgz#4858561dfcfd1441354a57297cdc478278326c38"
@@ -5783,6 +5824,14 @@ react-native-elements@3.0.0-alpha.1:
     react-native-ratings "^7.3.0"
     react-native-size-matters "^0.3.1"
     react-native-status-bar-height "^2.5.0"
+
+react-native-fs@2.16.6:
+  version "2.16.6"
+  resolved "https://registry.yarnpkg.com/react-native-fs/-/react-native-fs-2.16.6.tgz#2901789a43210a35a0ef0a098019bbef3af395fd"
+  integrity sha512-ZWOooD1AuFoAGY3HS2GY7Qx2LZo4oIg6AK0wbC68detxwvX75R/q9lRqThXNKP6vIo2VHWa0fYUo/SrLw80E8w==
+  dependencies:
+    base-64 "^0.1.0"
+    utf8 "^3.0.0"
 
 react-native-geolocation-service@5.1.1:
   version "5.1.1"
@@ -6949,6 +6998,18 @@ ultron@1.0.x:
   resolved "https://registry.yarnpkg.com/ultron/-/ultron-1.0.2.tgz#ace116ab557cd197386a4e88f4685378c8b2e4fa"
   integrity sha1-rOEWq1V80Zc4ak6I9GhTeMiy5Po=
 
+underscore.string@1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/underscore.string/-/underscore.string-1.1.4.tgz#9be06b23b8e3d996ea2020f9984202069e3dee12"
+  integrity sha1-m+BrI7jj2ZbqICD5mEICBp497hI=
+  dependencies:
+    underscore "1.1.6"
+
+underscore@1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.1.6.tgz#6868da1bdd72d75285be0b4e50f228e70d001a2c"
+  integrity sha1-aGjaG91y11KFvgtOUPIo5w0AGiw=
+
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/unicode-canonical-property-names-ecmascript/-/unicode-canonical-property-names-ecmascript-1.0.4.tgz#2619800c4c825800efdd8343af7dd9933cbe2818"
@@ -7136,6 +7197,11 @@ utf8-byte-length@^1.0.1:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/utf8-byte-length/-/utf8-byte-length-1.0.4.tgz#f45f150c4c66eee968186505ab93fcbb8ad6bf61"
   integrity sha1-9F8VDExm7uloGGUFq5P8u4rWv2E=
+
+utf8@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/utf8/-/utf8-3.0.0.tgz#f052eed1364d696e769ef058b183df88c87f69d1"
+  integrity sha512-E8VjFIQ/TyQgp+TZfS6l8yp/xWppSAHzidGiRrqe4bK4XP9pTRyKFgGJpO3SN7zdX4DeomTrwaseCHovfpFcqQ==
 
 util-deprecate@~1.0.1:
   version "1.0.2"

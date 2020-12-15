@@ -69,24 +69,23 @@ export default class MainStack extends React.Component {
           headerMode= 'screen'
           screenOptions={{
             headerStyle: {
-                backgroundColor: '#404040',
+                backgroundColor: '#8C6C64',
                 shadowRadius: 0,
                 shadowOffset:{
                   height:0,
                 }
             },
-            headerTintColor: '#404040',
-            headerBackTitle: ' ',
+            headerTintColor: '#8C6C64',
 
             headerTitleStyle: {
-              color: '#404040',
+              color: '#F0EDE4',
               fontWeight: 'bold',
             },
             headerTitle: ' ',
         }}>
           <Stack.Screen name="Main" component={HomeScreen}/>
-          <Stack.Screen name="Navigate" component={Navigate} options={({route}) => ({headerBackTitle: 'Main', headerTintColor: 'white'})}/>
-          <Stack.Screen name="TimeTable" component={TimeTableStack} options={({route}) => ({headerBackTitle: 'Main', headerTintColor: 'white'})}/>
+          <Stack.Screen name="Navigate" component={Navigate} options={({route}) => ({headerBackTitle: 'Main', headerTintColor: '#F0EDE4'})}/>
+          <Stack.Screen name="TimeTable" component={TimeTableStack} options={({route}) => ({headerBackTitle: 'Main', headerTintColor: '#F0EDE4'})}/>
         </Stack.Navigator>
     );
   }
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: '#404040',
+    backgroundColor: '#F0EDE4',
     alignItems: 'stretch',
     justifyContent: 'center',
   },
@@ -108,7 +107,7 @@ const styles = StyleSheet.create({
   title: {
     height:100,
     marginTop: 120,
-    color: '#fff',
+    color: 'black',
     textAlign: 'auto',
     fontSize: 70,
     fontFamily: "Cochin",

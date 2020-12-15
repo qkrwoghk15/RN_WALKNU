@@ -49,11 +49,12 @@ export default function MyTabBar({ state, descriptors, navigation }) {
             testID={options.tabBarTestID}
             onPress={onPress}
             onLongPress={onLongPress}
-            style={{ flex: 1 , backgroundColor: isFocused? '#404040' : 'white'}}
+            style={{ flex: 1 , backgroundColor: isFocused? '#F0EDE4' : 'white'}}
           >
             <View style={{alignItems: 'center', justifyContent: 'center'}}>
               <Image source={label == "시간표"? require('../images/table.png'):require('../images/timeMap.png')} 
-                    style={{resizeMode: 'contain', width: '90%', height: '90%'}}></Image>
+                    style={{resizeMode: 'contain', width: '90%', height: '70%'}}></Image>
+              <Text>{label}</Text>
             </View>
           </TouchableOpacity>
         );

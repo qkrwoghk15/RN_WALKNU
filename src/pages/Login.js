@@ -1,22 +1,42 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
 export default class Login extends React.Component {
   state={
-    name:"",
     email:"",
     password:""
   }
+
+  validate_field=()=>{
+      const { email, password } = this.state
+      if(email == ""){
+          alert("아이디를 입력하세요")
+          return false
+      } else if(password == ""){
+          alert("비밀번호를 입력하세요")
+          return false
+      }
+      return true
+  }
+
+  making_api_call=()=>{
+      if(this.validate_field() && this.compare_field()){
+        this.props.navigation.navigate('Main')
+      }
+  }
+  
+  compare_field=()=>{
+      const { email, password } = this.state
+      if(email != "abc" || password != "1234"){
+            alert("아이디와 비밀번호가 일치하지 않습니다")
+            return false
+      }
+      return true
+  }
+
   render(){
     return (
       <View style={styles.container}>
-        <View style={styles.inputView} >
-          <TextInput  
-            style={styles.inputText}
-            placeholder="name..." 
-            placeholderTextColor="#003f5c"
-            onChangeText={text => this.setState({name:text})}/>
-        </View>
         <View style={styles.inputView} >
           <TextInput  
             style={styles.inputText}
@@ -32,16 +52,10 @@ export default class Login extends React.Component {
             placeholderTextColor="#003f5c"
             onChangeText={text => this.setState({password:text})}/>
         </View>
-        <View style={styles.inputView} >
-          <TextInput  
-            secureTextEntry
-            style={styles.inputText}
-            placeholder="Check Password..." 
-            placeholderTextColor="#003f5c"
-            onChangeText={text => this.setState({password:text})}/>
-        </View>
-        <TouchableOpacity style={styles.loginBtn} onPress={() => this.props.navigation.navigate('Home')}>
-          <Text style={styles.loginText}>회원가입</Text>
+        <TouchableOpacity 
+            style={styles.loginBtn} 
+            onPress={() => this.making_api_call()}>
+          <Text style={styles.loginText}>로그인</Text>
         </TouchableOpacity>
 
   

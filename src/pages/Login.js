@@ -27,7 +27,7 @@ export default class Login extends React.Component {
   
   compare_field=()=>{
       const { email, password } = this.state
-      if(email != "abc" || password != "1234"){
+      if(email != "1" || password != "1"){
             alert("아이디와 비밀번호가 일치하지 않습니다")
             return false
       }

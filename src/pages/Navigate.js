@@ -78,7 +78,7 @@ const Navigate = () => {
             const itemData = (item.cid ? JSON.stringify(item.cid).toUpperCase() : '') + 
                             (item.cname ?JSON.stringify(item.cname) : '') +
                             (item.prof ? JSON.stringify(item.prof) : '') +
-                            (item.location ? JSON.stringify(item.location) : '')
+                            (item.location ? JSON.stringify(item.location) : '') + 
                             (item.univ ? JSON.stringify(item.univ) : '')
             const textData = text.toUpperCase();
             return itemData.indexOf(textData) > -1;

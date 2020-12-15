@@ -14,7 +14,7 @@ import Navigate from './Navigate';
 import TimeTableStack from './TimeTable';
 import Cite from '../components/Cite'
 
-import {Stack} from './SignIn'
+import {Stack} from './Home'
 
 const { UIManager } = NativeModules;
 

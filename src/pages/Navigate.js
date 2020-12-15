@@ -1,130 +1,275 @@
-import React, {Component} from 'react';
-import {View, Text, Linking, Image, TextInput, SearchBar, ActivityIndicator} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import {Platform, View, Text, ActivityIndicator, TouchableOpacity, StyleSheet, Dimensions, Image, ImageBackground, FlatList} from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker , Polyline, Overlay} from 'react-native-maps';
-// import Geolocation from 'react-native-geolocation-service';
+import SearchBar from 'react-native-platform-searchbar';
+import HighlightText from '@sanar/react-native-highlight-text';
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
-export default class Navigate extends Component{
-    constructor(){
-        super();
-        
-        this.state={
-            region:{
-                latitude:35.891425,
-                longitude:128.611994,
-                latitudeDelta:0.01,
-                longitudeDelta:0.01,
-            },
-            markers:[{
-                latlng:{latitude:35.890425, longitude:128.611994},
-                title:"경북대학교 본관",
-                description:"경북대학교의 중심"
-            },
-            {
-                latlng:{latitude:35.890425, longitude:128.611995},
-                title:"경북대학교 어딘가",
-                description:"경북대학교 어딘가"
-            }],
-            value:'',
-            loading: true,
-        }
- 
+const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
+const OVERLAY_TOP_LEFT_COORDINATE = [ 35.895890, 128.602600 ];
+const OVERLAY_BOTTOM_RIGHT_COORDINATE = [ 35.884600, 128.618022 ];
+const MAP_CENTER_LAT = 35.88889077773424, 
+    MAP_CENTER_LONG = 128.61038739453045;
+
+const Navigate = () => {
+    const [search, setSearch] = useState('');
+    const [filteredDataSource, setFilteredDataSource] = useState([]);
+    const [masterDataSource, setMasterDataSource] = useState([]);
+    const [selectedValue, setSelectedValue] = useState('');
+
+    const overlay = {
+        bounds: [OVERLAY_TOP_LEFT_COORDINATE, OVERLAY_BOTTOM_RIGHT_COORDINATE]
     }
- 
-    render(){
-        return(
-            <View style={{flex:1, padding:0,}}>
-                <View style = {{flex: 1}}>
-                    <SearchBar
-                        value={this.state.value}
-                        onChangeText={text => this.setState({value: text})}
-                        placeholder="Search"
-                        theme="light"
-                        style={{ flex:1, borderColor: 'gray', borderWidth: 1 }}
-                    >
-                        {this.state.loading ? (
-                            <ActivityIndicator style={{marginRight:10}} />
-                        ) : undefined}
-                    </SearchBar>
-                </View>
+    var markers = [{
+        latlng:{latitude:35.890425, longitude:128.611994},
+        title:"경북대학교 본관",
+        description:"경북대학교의 중심"
+    },
+    {
+        latlng:{latitude:35.890425, longitude:128.611995},
+        title:"경북대학교 어딘가",
+        description:"경북대학교 어딘가"
+    }]
+    const [region, setRegion] = useState({
+                                    latitude:MAP_CENTER_LAT,
+                                    longitude:MAP_CENTER_LONG,
+                                    latitudeDelta:0.013,
+                                    longitudeDelta:0.013,
+                                })
+    const [value, setValue] = useState('');
+    const [location, setLocation] = useState({
+                                        latitude:MAP_CENTER_LAT,
+                                        longitude:MAP_CENTER_LONG,
+                                    });
+    const [errorMsg, setErrorMsg] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [tracking, setTracking] = useState(false);
+    const [locatePop, showLocatePop] = useState(false);
+    const mapRef = useRef();
 
-                <MapView 
-                    style={{flex:11,}}
-                    initialRegion={this.state.region}
-                    provider={PROVIDER_GOOGLE}
-                    onRegionChange={this.onRegionChange}
-                >
-                    <Marker
-                        coordinate={this.state.region}
-                        title="미래능력개발교육원"
-                        description="http://wwww.mrhi.or.kr"
-                        onCalloutPress={this.clickCallout}></Marker>
-                    <Marker
-                        coordinate={{latitude:37.561727, longitude:127.036370}}
-                        title="성동경찰서"
-                        description="http://wwww.smpa.go.kr"></Marker>
+    useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestPermissionsAsync();
+            if (status !== 'granted') {
+                setErrorMsg('Permission to access location was denied');
+                return;
+            }
 
-                    {
-                        this.state.markers.map((marker,index)=>{
-                            return <Marker
-                                coordinate={marker.latlng}
-                                title={marker.title}
-                                description={marker.description}
-                                key={index}
-                                ><Image
-                                    source={require('../images/marker.png')}
-                                    style={{width: 40, height: 40}}
-                                    resizeMode="contain">
-                                </Image>
-                            </Marker>
-                        })
-                    }
+            let location = await Location.getCurrentPositionAsync({});
+            setLocation(location);
+        })();
+        }, []);
 
-                    <Polyline
-                        coordinates={[
-                            { latitude:35.890425, longitude:128.611994 },
-                            { latitude:35.890325, longitude:128.610994 },
-                            { latitude:35.890725, longitude:128.611894 },
-                            { latitude:35.890625, longitude:128.611794 },
-                            { latitude:35.891425, longitude:128.621994 },
-                            { latitude:35.889425, longitude:128.612994 },
-                        ]}
-                        strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
-                        strokeColors={[
-                            '#7F0000',
-                            '#00000000', // no color, creates a "long" gradient between the previous and next coordinate
-                            '#B24112',
-                            '#E5845C',
-                            '#238C23',
-                            '#7F0000'
-                        ]}
-                        strokeWidth={6}
+    useEffect(() => {
+        fetch(`http://3.218.74.114/graphql?query={ getLectures(subject: "") { cid, univ, cname, prof, ltime, location, latitude, longitude } }`)
+            .then((response) => response.json())
+            .then((responseJson) => {
+            setFilteredDataSource(responseJson.data.getLectures);
+            setMasterDataSource(responseJson.data.getLectures);
+            })
+            .catch((error) => {
+            console.error(error);
+            });
+        }, []);
+
+    const searchFilterFunction = (text) => {
+        // Check if searched text is not blank
+        if (text) {
+            // Inserted text is not blank
+            // Filter the masterDataSource
+            // Update FilteredDataSource
+            const newData = masterDataSource.filter(function (item) {
+            const itemData = (item.cid ? JSON.stringify(item.cid).toUpperCase() : '') + 
+                            (item.cname ?JSON.stringify(item.cname) : '') +
+                            (item.prof ? JSON.stringify(item.prof) : '')
+            const textData = text.toUpperCase();
+            return itemData.indexOf(textData) > -1;
+            });
+            setFilteredDataSource(newData);
+            setSearch(text);
+        } else {
+            // Inserted text is blank
+            // Update FilteredDataSource with masterDataSource
+            setFilteredDataSource(masterDataSource);
+            setSearch(text);
+        }
+    };
+
+    const ItemSeparatorView = () => {
+        return (
+            // Flat List Item Separator
+            <View
+            style={{
+                height: 0.5,
+                width: '100%',
+                backgroundColor: '#C8C8C8',
+            }}
+            />
+        );
+        };
+        
+    const ItemView = ({ item }) => {
+        return (
+            // Flat List Item
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text onPress={() => getItem(item)}>
+                    <HighlightText
+                    highlightStyle={{ backgroundColor: 'yellow' }}
+                    searchWords={[search]}
+                    textToHighlight={`${item.cid}\n${item.cname.toUpperCase()}\n${item.prof}`}
                     />
-                </MapView>
+                </Text>
             </View>
         );
-    }
- 
-    clickCallout=()=>{
-        Linking.openURL('http://www.mrhi.or.kr');
+    };
+        
+    const getItem = (item) =>
+    // Function for click on an item
+    Alert.alert(
+        `${item.univ}\n`,
+        `${item.location}\n`,
+        [
+            { text: "OK", onPress: () => {
+                console.log('test')
+            }},
+            {
+                text: "Cancel",
+                style: "cancel"
+            },
+        ],
+        { cancelable: false }
+        );
+
+    const movetoCenter=()=>{
+        mapRef.current.animateToRegion({
+            latitude:MAP_CENTER_LAT,
+            longitude:MAP_CENTER_LONG,
+            latitudeDelta:0.013,
+            longitudeDelta:0.013,
+        })
     }
 
-    // async requestLocationPermission(){
-            
-    //     try{
-    //         // 퍼미션 요청 다이얼로그 보이기
-    //         const granted=await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
- 
-    //         if(granted== PermissionsAndroid.RESULTS.GRANTED){
-    //             alert('위치정보 사용을 허가하셨습니다.');
-    //         }else{
-    //             alert('위치정보 사용을 거부하셨습니다.\n앱의 기능사용이 제한됩니다.');
-    //         }
- 
-    //     }catch(err){alert('퍼미션 작업 에러');}
- 
-    // }
-    // //화면이 시작될때 퍼미션 받도록 라이프사이클 메소드 이용
-    // async componentDidMount(){
-    //    await this.requestLocationPermission()
-    // }
+    const getCurrentPos = () => {
+        setRegion({
+            latitude: location.latitude,
+            longitude: location.longitude
+        })
+    }
+
+    return(
+        <View style={{flex:1, padding:0,}}>
+            <View style = {{flex: 1}}>
+                <SearchBar
+                    value={value}
+                    onChangeText={(text) => setValue(text)}
+                    onClear={(text)=>setValue('')}
+                    placeholder="Search"
+                    theme="light"
+                    style={{ flex:1, borderColor: 'gray', borderWidth: 1 }}
+                >
+                    {loading ? (
+                        <ActivityIndicator style={{marginRight:10}} />
+                    ) : undefined}
+                </SearchBar>
+                <FlatList
+                    data={filteredDataSource}
+                    keyExtractor={(item, index) => index.toString()}
+                    ItemSeparatorComponent={ItemSeparatorView}
+                    renderItem={ItemView}
+                />
+            </View>
+
+            <MapView
+                ref={mapRef}
+                style={{flex:13,}}
+                initialRegion={region}
+                provider={PROVIDER_GOOGLE}
+                showsUserLocation={true}
+                showsMyLocationButton={true}
+                toolbarEnabled={true}
+                
+                onUserLocationChange={location => setLocation({
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                })}
+                onRegionChange={region=> setRegion({
+                    latitude: region.latitude,
+                    longitude: region.longitude,
+                })}
+                onRegionChangeComplete={region => setRegion({
+                    latitude: region.latitude,
+                    longitude: region.longitude,
+                })}
+            >
+                {/* ButtonBox */}
+                
+                    <TouchableOpacity onPress={()=>movetoCenter()} style={{position: 'absolute', left:'50%' , bottom: 0, width:50, height: 50}}>
+                        <View style={{flex: 1}}>
+                            <Image
+                                source={require('../images/emblem.png')} 
+                                style={{resizeMode:'contain', width:50, height: 50}}/>
+                        </View>
+                    </TouchableOpacity>
+                
+
+                <Overlay
+                    image={require('../images/campus.jpg')}
+                    bounds={overlay.bounds}
+                    style={{position: 'absolute'}}
+                />
+                
+                {
+                    markers.map((marker,index)=>{
+                        return <Marker
+                            coordinate={marker.latlng}
+                            title={marker.title}
+                            description={marker.description}
+                            key={index}
+                            >
+                        </Marker>
+                    })
+                }
+            </MapView>
+        </View>
+    );
 }
+
+const buttonStyles = StyleSheet.create({
+    button: {},// backgroundColor: '#3366CC'
+    btnText: { textAlign: 'center', color: 'black', fontSize: 15},
+  });
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    overlay:{
+        backgroundColor:"#00000070",
+        height:"100%",
+        width:"100%",
+        justifyContent:"center",
+        alignItems:"center"
+    },
+    heading1:{
+        color:"#fff",
+        fontWeight:"bold",
+        fontSize:30,
+        margin:20
+    },
+    heading2:{
+        color:"#fff",
+        margin:5,
+        fontWeight:"bold",
+        fontSize:15
+    },
+    heading3:{
+        color:"#fff",
+        margin:5
+    }
+});
+
+export default Navigate;

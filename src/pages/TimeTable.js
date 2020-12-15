@@ -1,5 +1,15 @@
 import React, { Component, useRef,  useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert, FlatList, Dimensions, Button, ScrollView, Image, ImageBackground} from 'react-native';
+import { 
+  StyleSheet, 
+  View, Text, 
+  TouchableOpacity,
+  Alert, 
+  FlatList, 
+  Dimensions, 
+  Button, 
+  ScrollView, 
+  Image, ImageBackground, 
+  ActivityIndicator, Colors} from 'react-native';
 import { Table, TableWrapper,Col, Cell, Row } from 'react-native-table-component';
 import RBSheet from "react-native-raw-bottom-sheet";
 import { SearchBar } from 'react-native-elements';
@@ -26,6 +36,7 @@ const BottomSwipeButton = (props) => {
  
   return (
     <>
+      {/* SearchButton */}
       <TouchableOpacity onPress={openPopUp} style={{alignItems: 'center'}}>
         <View style={[styles.modalBtn, {padding: 0, flexDirection: 'row', flexWrap: 'nowrap'}]}>
           <Image
@@ -37,9 +48,10 @@ const BottomSwipeButton = (props) => {
         </View>
       </TouchableOpacity>
 
+      {/* RowBottomModal */}
       <RBSheet
           ref = {modalizeRef}
-          height = {SCREEN_HEIGHT-180-40*5}
+          height = {SCREEN_HEIGHT-180-40*8}
           animationType = "slide"
           openDuration= {300}
           closeDuration= {200}
@@ -69,27 +81,47 @@ const SearchList = (props) => {
   const [selectedValue, setSelectedValue] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
   const [depart, setDepart] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [indexing, setIndexing] = useState(0);
+  const indexAry=['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+  const indexCheck=[
+    /[가-깋]/,
+    /[나-닣]/,
+    /[다-딯]/,
+    /[라-맇]/,
+    /[마-밓]/,
+    /[바-빟]/,
+    /[사-싷]/,
+    /[아-잏]/,
+    /[자-짛]/,
+    /[차-칳]/,
+    /[카-킿]/,
+    /[타-팋]/,
+    /[파-핗]/,
+    /[하-힣]/,
+  ]
 
+  //fetch depart List
   useEffect(() => {
     fetch('http://3.218.74.114/graphql?query={ getSubjectArray {subject} }')
         .then((response)=>response.json())
         .then((responseJson)=>{
-          responseJson.data.getSubjectArray.map((value, index) => {
-            const str = JSON.stringify(value.subject)
-            setDepart(depart.concat((str.substr(1,str.length-3))));
-          })
+          setDepart(responseJson.data.getSubjectArray)
         }).catch((error)=>{
             console.error(error);
         })
   }, []);
-
+  
+  //fetch search list
   useEffect(() => {
+    setLoading(false)
     setFilteredDataSource('');
-    fetch(`http://3.218.74.114/graphql?query={ getLectures(subject: "${selectedValue}") { cid, univ, cname, prof, ltime, location } }`)
+    fetch(`http://3.218.74.114/graphql?query={ getLectures(subject: "${selectedValue}") { cid, univ, cname, prof, ltime, location, latitude, longitude } }`)
       .then((response) => response.json())
       .then((responseJson) => {
         setFilteredDataSource(responseJson.data.getLectures);
         setMasterDataSource(responseJson.data.getLectures);
+        setLoading(true)
       })
       .catch((error) => {
         console.error(error);
@@ -143,7 +175,7 @@ const SearchList = (props) => {
             textToHighlight={`${item.cid}\n${item.cname.toUpperCase()}\n${item.prof}`}
           />
         </Text>
-        <InfoButton id={item.cid} cname = {item.cname} univ={item.univ}></InfoButton>
+        <InfoButton id={item.cid} lecture={item}></InfoButton>
       </View>
     );
   };
@@ -170,7 +202,7 @@ const SearchList = (props) => {
   function InfoButton(props) {
     const touchable = useRef();
     const [showPopover, setShowPopover] = useState(false);
-   
+
     return (
       <>
         <TouchableOpacity ref={touchable} onPress={() => setShowPopover(true)} style={{flex: 1, marginRight: 20}}>
@@ -185,9 +217,9 @@ const SearchList = (props) => {
           onRequestClose={() => setShowPopover(false)}
           >
             <View style={modalStyles.popov}>
-              <Text>강의명: {props.cname}</Text>
-              <Text>장소: {props.univ}</Text>
-              <PopMap lat={1/10000} long ={1/10000}></PopMap>
+              <Text>강의명: {props.lecture.cname}</Text>
+              <Text>장  소: {props.lecture.location}</Text>
+              <PopMap lecture={props.lecture}></PopMap>
             </View>
         </Popover>
       </>
@@ -202,7 +234,7 @@ const SearchList = (props) => {
             searchIcon={{ size: 24 }}
             onChangeText={(text) => searchFilterFunction(text)}
             onClear={(text) => searchFilterFunction('')}
-            placeholder="과목 검색..."
+            placeholder="과목 검색"
             value={search}
           />
 
@@ -214,28 +246,54 @@ const SearchList = (props) => {
             </View>
           </TouchableOpacity>
 
+          {/* select depart Ary */}
           <Modal isVisible={isModalVisible}>
-            <View style={[modalStyles.textbtn, {alignItems: 'center', marginTop:60}]}>
-              <View style={{height: SCREEN_HEIGHT/4, widht: SCREEN_WIDTH/2, marginTop: 60, alignItems:'center', justifyContent:'center'}}>
-                <ScrollView>
-                  {
-                    depart.map((key, index) => (
+            <View style={[modalStyles.textbtn, {alignItems: 'center', marginTop:30}]}>
+              <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{flexDirection: 'row'}}>
+                {
+                  indexAry.map((key, i)=>(
+                    <TouchableOpacity onPress={() => setIndexing(i)}>
                       <Text
-                        onPress={() => setSelectedValue(key)}
-                        style={[modalStyles.textbtn,{textAlign: 'center'}]}
-                      >{key}</Text>
-                    ))
+                        style={[modalStyles.indextext, (key==indexAry[indexing])&&{color: 'red', fontSize: 35}]}
+                        key={i}
+                        >{key}</Text>
+                    </TouchableOpacity>
+                  ))
+                }
+              </ScrollView>
+              
+              <View style={{height: SCREEN_HEIGHT/4, width: SCREEN_WIDTH*0.8, marginTop: 20, alignItems:'center', justifyContent:'center', borderTopWidth:1, borderBottomWidth: 1, borderColor:'white'}}>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  {
+                    depart.map((key, i) => {
+                      const str = JSON.stringify(key.subject)
+                      if(indexCheck[indexing].test(str.charAt(1))){
+                        return(
+                          <Text
+                          onPress={() => setSelectedValue(key.subject)}
+                          style={[modalStyles.textbtn, {textAlign: 'center'}]}
+                          key={i}
+                          >{key.subject}</Text>
+                        )
+                      }
+                    })
                   }
                 </ScrollView>
               </View>
 
-              <View style={{marginTop: 100}}>
+              <View style={{marginTop: 40}}>
                 <Button title="확인" onPress={() => setModalVisible(!isModalVisible)} />
               </View>
             </View>
           </Modal>
         </View>
-          
+
+          {!loading ? (
+            <View style={{flex:1, alignItems:'center', justifyContent: 'center'}}>
+              <ActivityIndicator size="large" color="#404040" style={{marginTop:'30%'}} />
+            </View>
+          ) : undefined}
+
           <FlatList
             data={filteredDataSource}
             keyExtractor={(item, index) => index.toString()}
@@ -294,13 +352,13 @@ const EnrollList=(props)=>{
   const lists = props.enrollArr.map(function(list, index){ 
     if(list.strTime.length==5)
       return (
-        <Rect time={list.strTime} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr}></Rect>
+        <Rect time={list.strTime} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr} key={index}></Rect>
       )
     else 
       return (
         <>
-          <Rect time={list.strTime.substring(0,5)} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr}></Rect>
-          <Rect time={list.strTime.substring(5,list.strTime.length)} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr}></Rect>
+          <Rect time={list.strTime.substring(0,5)} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr} key={index}></Rect>
+          <Rect time={list.strTime.substring(5,list.strTime.length)} cname={list.cname} item = {list} removeEnrollArr = {props.removeEnrollArr} key={index}></Rect>
         </>
       )
   }.bind(this))
@@ -331,17 +389,20 @@ class ElementButton extends Component{
           <View style={[styles.btn]}>
             <ImageBackground 
               source={this.state.isToday&&require('../images/today.png')}
-              style={{width:'100%', height:'100%', resizeMode: 'concate', justifyContent: 'center'}}>
-              <Text style={[styles.btnText, this.state.isToday&&{color: 'white'}]}>{this.state.value}</Text>
+              style={{width:'100%', height:'100%', justifyContent: 'center'}}
+              imageStyle={{width:'40%', height:'30%', resizeMode: 'contain', left: '32%', top: '70%'}}>
+              <Text style={[styles.btnText]}>{this.state.value}</Text>
             </ImageBackground>
           </View>
         </TouchableOpacity>
 
         <Modal isVisible={this.state.isModalVisible} style={{marginTop:'80%'}}>
-          <ModalMap lat={1/10000} long ={1/10000}></ModalMap>
-          <View style={{flex: 1, alignItems: 'center'}}>
-            <Button title="확인" onPress={this.toggleModal} />
-          </View>
+          <ModalMap enrollAry = {this.props.enrollAry}></ModalMap>
+            <View style={{flex: 1, alignItems: 'flex-end'}}>
+              <TouchableOpacity onPress={this.toggleModal} style={{marginTop:10, marginRight:5}}>
+                <Image source={require('../images/X.png')}  style={{resizeMode: 'contain', width: 30, height: 30}} />
+              </TouchableOpacity>
+            </View>
         </Modal>
       </>
     )
@@ -463,7 +524,7 @@ export default class TimeTable extends Component {
                     state.tableHead.map((value, index) => (
                       <Cell
                         key={index}
-                        data={<ElementButton value = {value} istoday={index==(state.day-1)}></ElementButton>}
+                        data={<ElementButton value = {value} istoday={index==(state.day-1)} enrollAry={this.state.enrollArr}></ElementButton>}
                         flex={1}
                         style={[styles.header]}
                         textStyle={[styles.text]}
@@ -512,14 +573,33 @@ export default class TimeTable extends Component {
                 </ImageBackground>
               </View>
             </TouchableOpacity>
-
+              
+            {/* MyModal */}
             <Modal 
               isVisible={this.state.confirmVisible}
               deviceWidth={SCREEN_WIDTH}
               deviceHeight={SCREEN_HEIGHT}
-              style={{backgroundColor: 'white',marginTop: '80%', marginBottom: '80%'}}>
-              <View style={{alignItems: 'center'}}>
-                <Button title="확인" onPress={this.toggleModal} />
+              style={{backgroundColor: 'white', margin: '10%', marginTop: '85%', marginBottom: '85%'}}>
+              <View style={{flex: 1}}>
+                <ImageBackground  source={require("../images/modalBack.png")} blurRadius={5} style={MyModalStyles.container}>
+                  <View style={MyModalStyles.overlay}>
+                    <View style={{height:'94%', justifyContent: 'center', alignItems: 'baseline'}}>
+                      <Text style={[MyModalStyles.message, {paddingTop: 40}]}>{`저장하시겠습니까?`}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row', felx:1, justifyContent: 'space-around'}}>
+                      <TouchableOpacity onPress={this.toggleModal} style={MyModalStyles.btnPad}>
+                        <View >
+                          <Text style={MyModalStyles.btntext}>취소</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={this.toggleModal} style={[MyModalStyles.btnPad,{borderStartWidth:1}]}>
+                        <View >
+                          <Text style={MyModalStyles.btntext}>확인</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </ImageBackground>
               </View>
             </Modal>
           </View>
@@ -593,9 +673,42 @@ const modalStyles = StyleSheet.create({
   btn: { width: 50, height: 18, backgroundColor: '#78B7BB',  borderRadius: 20 },
   btnText: { textAlign: 'center', color: '#fff' },
 
-  pribtn: { width: 70, height: 25, backgroundColor: 'black',  borderRadius: 20 },
+  pribtn: { width: 100, height: 25, backgroundColor: 'black',  borderRadius: 20 },
   pribtnText: { textAlign: 'center', color: '#fff', lineHeight: 25 },
 
   popov: { width: SCREEN_WIDTH*4/5, height: SCREEN_HEIGHT/3 , padding: 5},
-  textbtn: {fontSize: 30, margin:10, color: 'white'}
+  textbtn: {fontSize: 25, margin:10, color: 'white'},
+
+  indextext: {fontSize: 20, color: 'white', margin: 10, textAlign: 'auto'}
 });
+
+const MyModalStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  overlay:{
+    // backgroundColor:"#00000070",
+    height:"100%",
+    width:"100%",
+    justifyContent:"center",
+    alignItems:"center",
+  },
+  message:{
+    color: 'black',
+    fontSize: 28
+  },
+  btnPad:{
+    width: '50%',
+    height: '60%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btntext:{
+    fontSize: 20,
+    fontWeight: '300',
+    color: '#0030B5',
+  }
+})

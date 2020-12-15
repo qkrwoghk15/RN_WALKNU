@@ -8,7 +8,6 @@ import {
   ImageBackground,
   Image,
 } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import Navigate from './Navigate';
@@ -62,26 +61,17 @@ function HomeScreen({ navigation }) {
   );
 }
 
-export default class Main extends React.Component {
+export default class MainStack extends React.Component {
   render() {
     return (
-      <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="Main"
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: '#0D0D0D',
-              },
-              headerTintColor: '#fff',
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}>
-            <Stack.Screen name="Main" component={HomeScreen}/>
-            <Stack.Screen name="Navigate" component={Navigate} />
-            <Stack.Screen name="TimeTable" component={TimeTable} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}>
+          <Stack.Screen name="Main" component={HomeScreen}/>
+          <Stack.Screen name="Navigate" component={Navigate} />
+          <Stack.Screen name="TimeTable" component={TimeTable} />
+        </Stack.Navigator>
     );
   }
 }

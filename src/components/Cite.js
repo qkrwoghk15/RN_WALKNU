@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet,Dimensions, Linking, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet,Dimensions, Linking, } from 'react-native';
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');

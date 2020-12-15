@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-import Main from './src/pages/Main'
+import SignInStack from './src/pages/SignIn'
 
 function App() {
   return (
-    <Main></Main>
+    <SignInStack></SignInStack>
   );
 }
 export default App;

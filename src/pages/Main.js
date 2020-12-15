@@ -11,11 +11,12 @@ import {
 import { createStackNavigator } from '@react-navigation/stack';
 
 import Navigate from './Navigate';
-import TimeTable from './TimeTable';
+import TimeTableStack from './TimeTable';
 import Cite from '../components/Cite'
 
+import {Stack} from './SignIn'
+
 const { UIManager } = NativeModules;
-const Stack = createStackNavigator();
 
 UIManager.setLayoutAnimationEnabledExperimental &&
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -65,12 +66,22 @@ export default class MainStack extends React.Component {
   render() {
     return (
         <Stack.Navigator
+          headerMode= 'screen'
           screenOptions={{
-            headerShown: false,
-          }}>
+            headerStyle: {
+                backgroundColor: '#404040',
+                borderBottomColor: '#404040',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            headerTitle: ' ',
+            headerBackTitle: ' ',
+        }}>
           <Stack.Screen name="Main" component={HomeScreen}/>
           <Stack.Screen name="Navigate" component={Navigate} />
-          <Stack.Screen name="TimeTable" component={TimeTable} />
+          <Stack.Screen name="TimeTable" component={TimeTableStack} />
         </Stack.Navigator>
     );
   }

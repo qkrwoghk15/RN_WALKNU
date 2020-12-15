@@ -16,11 +16,15 @@ import { SearchBar } from 'react-native-elements';
 import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
 import Modal from 'react-native-modal';
 import HighlightText from '@sanar/react-native-highlight-text';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import PopMap from '../components/PopMap';
 import ModalMap from '../components/ModalMap';
 import {convertStrTime} from '../components/functions'
 
+import TimeMap from './TimeMap'
+
+const TimeTableTab = createBottomTabNavigator();
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
 // const SCREEN_WIDTH = Dimensions.get("window").width;
 // const SCREEN_HEIGHT = Platform.OS === "ios"
@@ -409,7 +413,7 @@ class ElementButton extends Component{
   }
 }
 
-export default class TimeTable extends Component {
+class TimeTable extends Component {
   constructor(props) {
     super(props);
 
@@ -592,7 +596,7 @@ export default class TimeTable extends Component {
                           <Text style={MyModalStyles.btntext}>취소</Text>
                         </View>
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={this.toggleModal} style={[MyModalStyles.btnPad,{borderStartWidth:1}]}>
+                      <TouchableOpacity onPress={()=>this.props.navigation.navigate('TimeMap')} style={[MyModalStyles.btnPad,{borderStartWidth:1}]}>
                         <View >
                           <Text style={MyModalStyles.btntext}>확인</Text>
                         </View>
@@ -607,6 +611,18 @@ export default class TimeTable extends Component {
       </View>
     )
   }
+}
+
+export default function TimeTableStack(){
+  return(
+    <TimeTableTab.Navigator
+      screenOptions={{
+          headerTransparent:'true',
+      }}>
+      <TimeTableTab.Screen name="TimeTable" component={TimeTable} navigation={navigation}/>
+      <TimeTableTab.Screen name="TimeMap" component={TimeMap} />
+   </TimeTableTab.Navigator>
+  )
 }
  
 const styles = StyleSheet.create({

@@ -31,17 +31,7 @@ export default function SignInStack() {
     return (
         <NavigationContainer>
             <Stack.Navigator
-                screenOptions={{
-                    headerStyle: {
-                    backgroundColor: 'black',
-                    },
-                    headerTintColor: '#fff',
-                    headerTitleStyle: {
-                    fontWeight: 'bold',
-                    },
-                    headerTitle: 'WALKNU',
-                    headerBackTitle: 'back'
-                }}>
+                headerMode= 'none'>
                 <Stack.Screen name="SignIn" component={SignInPage} />
                 <Stack.Screen name="Main" component={MainStack} />
                 <Stack.Screen name="SignUp" component= {SignUp} />

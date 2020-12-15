@@ -35,8 +35,8 @@ function HomeScreen({ navigation }) {
         <View style={imgStyles.container}>
           <TouchableOpacity onPress={() => navigation.navigate('Navigate')} style={{width: '60%', height: '60%'}}>
             <View>
-              <ImageBackground source={require('../images/map.png')} style={[imgStyles.image, {width: '120%'}]}>
-                <Text style={[imgStyles.text, {width: '120%'}]}>길찾기</Text>
+              <ImageBackground source={require('../images/map.png')} style={imgStyles.image} imageStyle={{width: '110%', height:'110%', resizeMode: 'contain'}}>
+                <Text style={imgStyles.text}>건물검색</Text>
               </ImageBackground>
             </View>
           </TouchableOpacity>
@@ -45,7 +45,7 @@ function HomeScreen({ navigation }) {
         <View style={imgStyles.container}>
           <TouchableOpacity onPress={() => navigation.navigate('TimeTable')} style={{width: '60%', height: '60%'}}>
             <View>
-              <ImageBackground source={require('../images/table.png')} style={imgStyles.image}>
+              <ImageBackground source={require('../images/table.png')} style={imgStyles.image} imageStyle={{width: '100%', resizeMode: 'contain'}}>
                 <Text style={imgStyles.text}>시간표</Text>
               </ImageBackground>
             </View>
@@ -70,18 +70,23 @@ export default class MainStack extends React.Component {
           screenOptions={{
             headerStyle: {
                 backgroundColor: '#404040',
-                borderBottomColor: '#404040',
+                shadowRadius: 0,
+                shadowOffset:{
+                  height:0,
+                }
             },
-            headerTintColor: '#fff',
+            headerTintColor: '#404040',
+            headerBackTitle: ' ',
+
             headerTitleStyle: {
+              color: '#404040',
               fontWeight: 'bold',
             },
             headerTitle: ' ',
-            headerBackTitle: ' ',
         }}>
           <Stack.Screen name="Main" component={HomeScreen}/>
-          <Stack.Screen name="Navigate" component={Navigate} />
-          <Stack.Screen name="TimeTable" component={TimeTableStack} />
+          <Stack.Screen name="Navigate" component={Navigate} options={({route}) => ({headerBackTitle: 'Main', headerTintColor: 'white'})}/>
+          <Stack.Screen name="TimeTable" component={TimeTableStack} options={({route}) => ({headerBackTitle: 'Main', headerTintColor: 'white'})}/>
         </Stack.Navigator>
     );
   }

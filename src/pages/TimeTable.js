@@ -21,15 +21,25 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import PopMap from '../components/PopMap';
 import ModalMap from '../components/ModalMap';
 import {convertStrTime} from '../components/functions'
+import MyTabBar from '../components/MyTabBar';
 
 import TimeMap from './TimeMap'
 
 const TimeTableTab = createBottomTabNavigator();
 const {height: SCREEN_HEIGHT, width: SCREEN_WIDTH} = Dimensions.get('window');
-// const SCREEN_WIDTH = Dimensions.get("window").width;
-// const SCREEN_HEIGHT = Platform.OS === "ios"
-//     ? Dimensions.get("window").height
-//     : require("react-native-extra-dimensions-android").get("REAL_WINDOW_HEIGHT");
+
+var RNFS = require('react-native-fs');
+var path = RNFS.DocumentDirectoryPath + '/enroll.txt';
+function WriteEnroll(str){
+  RNFS.writeFile(path, str, 'utf8')
+  .then((success) => {
+    console.log('FILE WRITTEN!');
+  })
+  .catch((err) => {
+    console.log(err.message);
+  });
+}
+
 ////////////////////////////////////////////////// Modal Button //////////////////////////////////////////////////
 const BottomSwipeButton = (props) => {
   const modalizeRef = useRef();
@@ -234,7 +244,6 @@ const SearchList = (props) => {
     <View style={{ flex: 1,  backgroundColor: '#A6A6A6'}}>
       <View style={modalStyles.container}>
           <SearchBar
-            round
             searchIcon={{ size: 24 }}
             onChangeText={(text) => searchFilterFunction(text)}
             onClear={(text) => searchFilterFunction('')}
@@ -443,6 +452,7 @@ class TimeTable extends Component {
 
       tableHead: ['월', '화', '수', '목', '금'],
       enrollArr: [],
+      message: "저장하시겠습니까?",
     }
   }
 
@@ -474,16 +484,36 @@ class TimeTable extends Component {
     this.setState({
       enrollArr: this.state.enrollArr.concat(item)
     })
+    WriteEnroll(JSON.stringify(this.state.enrollArr))
   }
 
   removeEnrollArr = (item) => {
     this.setState({
       enrollArr: this.state.enrollArr.filter(sub => sub.cname !== item.cname)
     })
+    WriteEnroll(JSON.stringify(this.state.enrollArr))
   }
 
-  toggleModal = (isVisible) => {
-    this.setState({confirmVisible: !isVisible})
+  toggleModal(isConfirm){
+    if(!this.state.confirmVisible){
+      this.setState({
+        message: "저장하시겠습니까?",
+        confirmVisible: !this.state.confirmVisible
+      })
+    }
+    else{
+      if(this.state.message == "저장하시겠습니까?" && isConfirm){
+        //save function
+        this.setState({
+          message: "저장되었습니다."
+        })
+      }
+      else{
+        this.setState({
+          confirmVisible: !this.state.confirmVisible,
+        })
+      }
+    }
   }
 
   render() {
@@ -560,7 +590,7 @@ class TimeTable extends Component {
           </ScrollView>
         </View>
         
-        <View style={{flex: 1, flexDirection:'row', paddingBottom: 50}}>
+        <View style={{flex: 1, flexDirection:'row', paddingBottom: 25}}>
           <View style={{flex: 1}}></View>
 
           <View style={{flex: 2, flexDirection:'column-reverse'}}>
@@ -569,11 +599,11 @@ class TimeTable extends Component {
           
           <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', marginTop:50}}>
             <TouchableOpacity onPress = {()=>this.toggleModal(this.state.confirmVisible)}>
-              <View style={{width: 60, alignItems: 'center', justifyContent: 'center', backgroundColor: '#464646', borderRadius: 30,}}>
+              <View style={{width:100, height: 120, alignItems: 'center', justifyContent: 'center', borderRadius: 30,paddingRight:15}}>
                 <ImageBackground 
-                  source={require('../images/next.png')} 
-                  style={{width: '100%', height:'100%', resizeMode: 'concate', alignItems:'center'}}>
-                  <Text style={{fontSize: 15, color: 'white', padding: 5}}></Text>
+                  source={require('../images/save.png')} 
+                  style={{width: '100%', height:'100%', alignItems:'center'}}
+                  imageStyle={{width: '100%', height:'90%', resizeMode: 'stretch'}}>
                 </ImageBackground>
               </View>
             </TouchableOpacity>
@@ -588,16 +618,19 @@ class TimeTable extends Component {
                 <ImageBackground  source={require("../images/modalBack.png")} blurRadius={5} style={MyModalStyles.container}>
                   <View style={MyModalStyles.overlay}>
                     <View style={{height:'94%', justifyContent: 'center', alignItems: 'baseline'}}>
-                      <Text style={[MyModalStyles.message, {paddingTop: 40}]}>{`저장하시겠습니까?`}</Text>
+                      <Text style={[MyModalStyles.message, {paddingTop: 40}]}>{`${this.state.message}`}</Text>
                     </View>
                     <View style={{flexDirection: 'row', felx:1, justifyContent: 'space-around'}}>
-                      <TouchableOpacity onPress={this.toggleModal} style={MyModalStyles.btnPad}>
-                        <View >
-                          <Text style={MyModalStyles.btntext}>취소</Text>
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={()=>this.props.navigation.navigate('TimeMap')} style={[MyModalStyles.btnPad,{borderStartWidth:1}]}>
-                        <View >
+                      {
+                        (this.state.message=="저장하시겠습니까?")&&
+                        <TouchableOpacity onPress={()=>this.toggleModal(false)} style={[MyModalStyles.btnPad,{borderEndWidth:1}]}>
+                          <View>
+                            <Text style={MyModalStyles.btntext}>취소</Text>
+                          </View>
+                        </TouchableOpacity>
+                      }
+                      <TouchableOpacity onPress={()=>this.toggleModal(true)} style={[MyModalStyles.btnPad]}>
+                        <View>
                           <Text style={MyModalStyles.btntext}>확인</Text>
                         </View>
                       </TouchableOpacity>
@@ -615,12 +648,9 @@ class TimeTable extends Component {
 
 export default function TimeTableStack(){
   return(
-    <TimeTableTab.Navigator
-      screenOptions={{
-          headerTransparent:'true',
-      }}>
-      <TimeTableTab.Screen name="TimeTable" component={TimeTable} navigation={navigation}/>
-      <TimeTableTab.Screen name="TimeMap" component={TimeMap} />
+    <TimeTableTab.Navigator tabBar={props=> <MyTabBar {...props} />}>
+      <TimeTableTab.Screen name="시간표" component={TimeTable}/>
+      <TimeTableTab.Screen name="지도" component={TimeMap} />
    </TimeTableTab.Navigator>
   )
 }

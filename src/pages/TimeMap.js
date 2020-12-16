@@ -58,7 +58,7 @@ const TimeMap = ({ route, navigation }) => {
         for(let i=0; i<5; i++){
             const toDayEnroll = enrollArr.filter(lecture => parseInt(lecture.strTime.charAt(0))==i)
                                         .concat(enrollArr.filter(lecture => parseInt(lecture.strTime.charAt(5))==i))
-            setDayEnroll(dayEnroll.concat(enroll, toDayEnroll))
+            setDayEnroll(dayEnroll.concat(dayEnroll, toDayEnroll))
         }
     })
     console.log(dayEnroll)

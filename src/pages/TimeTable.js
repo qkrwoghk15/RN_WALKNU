@@ -547,13 +547,13 @@ class TimeTable extends Component {
       <View style={styles.container}>
         <View style={{flex: 1, padding: 10}}>
           <Text style={{color: "white",
-                        fontSize: 42,
+                        fontSize: 38,
                         fontWeight: "bold",
                         textAlign: "center",
                         backgroundColor: "#8C6C64a0"}}>{`${state.year}/${state.month}/${state.date}(${state.week[state.day]})`}</Text>
           <Text style={{color: "white",
                         textAlign: "center",
-                        fontSize: 21,
+                        fontSize: 18,
                         backgroundColor: "#8C6C64a0"}}>{`${state.hours}시 ${state.min}분`}</Text>
         </View>
         <View style={{flex: 7, padding: 10}}>
@@ -624,13 +624,13 @@ class TimeTable extends Component {
               <View style={{flex: 1}}>
                 <ImageBackground  source={require("../images/modalBack.png")} blurRadius={5} style={MyModalStyles.container}>
                   <View style={MyModalStyles.overlay}>
-                    <View style={{height:'95%', justifyContent: 'center', alignItems: 'baseline'}}>
+                    <View style={{height: SCREEN_HEIGHT * 0.15, justifyContent: 'center', alignItems: 'baseline'}}>
                       <Text style={[MyModalStyles.message, {paddingTop: 40}]}>{`${this.state.message}`}</Text>
                     </View>
-                    <View style={{flexDirection: 'row', felx:1, justifyContent: 'space-around'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                       {
                         (this.state.message=="저장하시겠습니까?")&&
-                        <TouchableOpacity onPress={()=>this.toggleModal(false)} style={[MyModalStyles.btnPad,{borderEndWidth:1}]}>
+                        <TouchableOpacity onPress={()=>this.toggleModal(false)} style={[MyModalStyles.btnPad]}>
                           <View>
                             <Text style={MyModalStyles.btntext}>취소</Text>
                           </View>
@@ -746,7 +746,7 @@ const modalStyles = StyleSheet.create({
 const MyModalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F0EDE4',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -762,14 +762,16 @@ const MyModalStyles = StyleSheet.create({
     fontSize: 28
   },
   btnPad:{
-    width: '50%',
-    height: '60%',
+    backgroundColor: '#8C6C64',
+    borderWidth: 1,
+    width: SCREEN_WIDTH * 0.4,
+    height: SCREEN_HEIGHT * 0.05,
     justifyContent: 'center',
     alignItems: 'center',
   },
   btntext:{
     fontSize: 20,
     fontWeight: '300',
-    color: '#0030B5',
+    color: 'white',
   }
 })

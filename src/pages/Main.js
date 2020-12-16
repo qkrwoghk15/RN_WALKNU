@@ -26,8 +26,7 @@ function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <View style={{flex:1}}></View>
       <View style={styles.box}>
-        <ImageBackground source={require('../images/logo.png')} style={imgStyles.image}>
-          <Text style={styles.title}> WALKNU </Text>
+        <ImageBackground source={require('../images/logo2.png')} style={imgStyles.image}>
         </ImageBackground>        
       </View>
 
@@ -36,8 +35,9 @@ function HomeScreen({ navigation }) {
           <TouchableOpacity onPress={() => navigation.navigate('Navigate')} style={{width: '60%', height: '60%'}}>
             <View>
               <ImageBackground source={require('../images/map.png')} style={imgStyles.image} imageStyle={{width: '110%', height:'110%', resizeMode: 'contain'}}>
-                <Text style={imgStyles.text}>건물검색</Text>
+                <Text style={imgStyles.searchtext}>건물검색</Text>
               </ImageBackground>
+              
             </View>
           </TouchableOpacity>
         </View>
@@ -127,6 +127,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'flex-end',
   },
+  logo:{
+    height:100,
+    marginTop: 180,
+    fontWeight:"bold",
+    fontSize:50,
+    color:"#8C6C64",
+    marginBottom:40
+  },
 });
 
 const imgStyles = StyleSheet.create({
@@ -144,12 +152,19 @@ const imgStyles = StyleSheet.create({
     alignItems: "center",
     
   },
+  searchtext: {
+    width: '150%',
+    padding: 3,
+    color: "white",
+    fontSize: 42,
+    textAlign: "center",
+    backgroundColor: "#000000a0"
+  },
   text: {
     width: '140%',
     padding: 3,
     color: "white",
     fontSize: 42,
-    fontWeight: "bold",
     textAlign: "center",
     backgroundColor: "#000000a0"
   }

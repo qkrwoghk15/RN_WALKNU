@@ -224,7 +224,7 @@ const Navigate = () => {
             </MapView>
 
             {/* ButtonBox */}
-            <TouchableOpacity onPress={()=>movetoCenter()} style={{position: 'absolute', right:'18%' , bottom: '5.5%', width:55, height: 55}}>
+            <TouchableOpacity onPress={()=>movetoCenter()} style={{position: 'absolute', right:'20%' , bottom: '1.8%', width:55, height: 55}}>
                 <View style={{flex: 1}}>
                     <Image
                         source={require('../images/emblem.png')} 

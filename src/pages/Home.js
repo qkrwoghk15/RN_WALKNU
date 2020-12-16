@@ -13,13 +13,13 @@ function SignInPage({navigation}) {
     
     return (
         <>
-            <View style={styles.container}>  
+            <View style={styles.container}>
                 <Text style={styles.logo}>WALKNU</Text>
                 <TouchableOpacity style={styles.loginBtn} onPress={() => navigation.navigate('Login')}>
                     <Text style={styles.loginText}>로그인</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-                    <Text style={styles.loginText}>회원가입</Text>
+                    <Text style={styles.signupText}>회원가입</Text>
                 </TouchableOpacity>
             </View>
         </>
@@ -44,14 +44,14 @@ export default function SignInStack() {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#003f5c',
+      backgroundColor: '#F0EDE4',
       alignItems: 'center',
       justifyContent: 'center',
     },
     logo:{
       fontWeight:"bold",
       fontSize:50,
-      color:"#fb5b5a",
+      color:"#8C6C64",
       marginBottom:40
     },
     inputView:{
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     },
     loginBtn:{
       width:"80%",
-      backgroundColor:"#fb5b5a",
+      backgroundColor:"#8C6C64",
       borderRadius:25,
       height:50,
       alignItems:"center",
@@ -84,11 +84,7 @@ const styles = StyleSheet.create({
     loginText:{
       color:"white"
     },
-    image: {
-      width: '50%',
-      height: '50%',
-      resizeMode: "contain",
-      justifyContent: "center",
-      alignItems: "center"
+    signuptext:{
+      color:"black"
     }
   });

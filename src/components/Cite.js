@@ -43,6 +43,6 @@ export default class Cite extends React.PureComponent {
 
 const styles = StyleSheet.create({
   container: {width: 100, alignItems: 'center', justifyContent: 'center', borderRadius: 10,},
-  menutext: {fontSize: 15, color: 'white', padding: 5},
+  menutext: {fontSize: 15, color: 'black', padding: 5},
   menubtn: {height: 40,}
 })

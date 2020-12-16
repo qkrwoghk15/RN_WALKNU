@@ -102,11 +102,11 @@ const Navigate = () => {
                     setSearch('')
                     searchFilterFunction('')
                     setMarker({
-                        latlng:{latitude:item.latitude, longitude:item.longitude},
+                        latlng:{latitude:item.latitude/1000000, longitude:item.longitude/1000000},
                         title: item.location,
                         description: `${item.cname}\n${item.ltime}`
                     });
-                    movetoLocation(item.latitude, item.longitude)
+                    movetoLocation(item.latitude/1000000, item.longitude/1000000)
                 }},
                 {
                     text: "Cancel",
@@ -224,7 +224,7 @@ const Navigate = () => {
             </MapView>
 
             {/* ButtonBox */}
-            <TouchableOpacity onPress={()=>movetoCenter()} style={{position: 'absolute', right:'20%' , bottom: '1.8%', width:55, height: 55}}>
+            <TouchableOpacity onPress={()=>movetoCenter()} style={{position: 'absolute', right:SCREEN_WIDTH*0.2 , bottom: SCREEN_HEIGHT*0.045, width:55, height: 55}}>
                 <View style={{flex: 1}}>
                     <Image
                         source={require('../images/emblem.png')} 

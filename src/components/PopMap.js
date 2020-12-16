@@ -9,14 +9,14 @@ export default class PopMap extends Component{
         const OVERLAY_BOTTOM_RIGHT_COORDINATE = [ 35.884600, 128.618022 ];
         this.state={
             region:{
-                latitude: props.lecture.latitude,
-                longitude: props.lecture.longitude,
+                latitude: props.lecture.latitude/1000000,
+                longitude: props.lecture.longitude/1000000,
                 // 얼마의 위도경도 차이까지 지도에 표시되는가 (zoom 설정)
                 latitudeDelta:0.005,
                 longitudeDelta:0.005,
             },
             marker:{
-                latlng:{latitude: props.lecture.latitude,longitude: props.lecture.longitude},
+                latlng:{latitude: props.lecture.latitude/1000000,longitude: props.lecture.longitude/1000000},
                 title: props.lecture.location,
                 description: props.lecture.ltime,
             },
@@ -44,6 +44,7 @@ export default class PopMap extends Component{
                      />
 
                     <Marker
+                        isPreselected = 'true'
                         coordinate={marker.latlng}
                         title={marker.title}
                         description={marker.description}

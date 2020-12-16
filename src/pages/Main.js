@@ -7,6 +7,9 @@ import {
   View,
   ImageBackground,
   Image,
+  Button,
+  Alert,
+  Modal
 } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -63,6 +66,12 @@ function HomeScreen({ navigation }) {
 }
 
 export default class MainStack extends React.Component {
+  constructor(){
+    super();
+    this.state={
+      show:false
+    }
+  }
   render() {
     return (
         <Stack.Navigator
@@ -82,6 +91,32 @@ export default class MainStack extends React.Component {
               fontWeight: 'bold',
             },
             headerTitle: ' ',
+            headerRight: () => (
+              <View>
+                <TouchableOpacity onPress = {()=>{this.setState({show:true})}}>
+                  <View style={{width:40, height: 30, paddingRight:15}}>
+                    <ImageBackground 
+                      source={require('../images/profile.png')} 
+                      style={{width: '100%', height:'100%', alignItems:'center'}}
+                      imageStyle={{width: '100%', height:'90%', resizeMode: 'stretch'}}>
+                    </ImageBackground>
+                  </View>
+                </TouchableOpacity>
+                <Modal transparent={true} visible={this.state.show}>
+                  <View style={{backgroundColor:"#000000aa", flex:1}}>
+                    <View style={{backgroundColor: "#ffffff", margin:50, padding:40, borderRadius:10, flex:1}}>
+                      <Image source={require('../images/user.png')} style={imgStyles.userImage}></Image>
+                      <Text style={styles.idfont}>Geralt</Text>
+                      <TouchableOpacity onPress = {()=>{this.setState({show:false})}} style={[styles.btnPad]}>
+                        <View>
+                          <Text style={styles.btntext}>확인</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </Modal>
+              </View>
+            ),
         }}>
           <Stack.Screen name="Main" component={HomeScreen}/>
           <Stack.Screen name="Navigate" component={Navigate} options={({route}) => ({headerBackTitle: 'Main', headerTintColor: '#F0EDE4'})}/>
@@ -135,6 +170,29 @@ const styles = StyleSheet.create({
     color:"#8C6C64",
     marginBottom:40
   },
+  idfont:{
+    fontWeight:"bold",
+    fontSize:40,
+    color:"#8C6C64",
+    alignSelf: 'center'
+  },
+  headerButton:{
+    backgroundColor: 'black'
+  },
+  btnPad:{
+    backgroundColor: '#8C6C64',
+    borderRadius:10,
+    borderWidth: 1,
+    width: "100%",
+    height: "10%",
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btntext:{
+    fontSize: 20,
+    fontWeight: '300',
+    color: 'white',
+  }
 });
 
 const imgStyles = StyleSheet.create({
@@ -147,6 +205,14 @@ const imgStyles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+    resizeMode: "contain",
+    justifyContent: "center",
+    alignItems: "center",
+    
+  },
+  userImage: {
+    width: '100%',
+    height: '50%',
     resizeMode: "contain",
     justifyContent: "center",
     alignItems: "center",

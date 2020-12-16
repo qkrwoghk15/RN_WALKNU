@@ -41,5 +41,8 @@ function convertDay(day){
 }
 ///////////////////////////////////////////////////////// convert to String time from Json /////////////////////////////////////////////////////////
 export function convertToRealTime (strTime){
-    
+    var realTime;
+    if(strTime.length==5){
+        
+    }
 }

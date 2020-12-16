@@ -127,7 +127,7 @@ const SearchList = (props) => {
   useEffect(() => {
     setLoading(false)
     setFilteredDataSource('');
-    fetch(`http://3.218.74.114/graphql?query={ getLectures(subject: "${selectedValue}") { cid, univ, cname, prof, ltime, location, latitude, longitude } }`)
+    fetch(`http://3.218.74.114/graphql?query={ getLectures(subject: "${selectedValue}") { cid, univ, cname, prof, ltime, location, latitude, longitude, lid } }`)
       .then((response) => response.json())
       .then((responseJson) => {
         setFilteredDataSource(responseJson.data.getLectures);
@@ -335,10 +335,10 @@ const removeItem = (item, removeEnrollArr) =>
       );
 
 const Rect=(props) =>{
-  const color =['#E56C00', '#0000AA', '#00AAAA', '#A900AA', '#A90000', 
-                '#A95300', '#FC0000', '#0000FC', '#007D00', '#6C0071', 
-                '#23C52C', '#C52323', '#C523AE', '#005C9D', '#5353FC', 
-                '#003E00', '#3E003E', '#C54B23', '#23C589', '#5723C5'];
+  const color =['#EFF9CC', '#DCEEF2', '#F2E8E8', '#DEE8F6', '#FFF8CC', 
+                '#FFEDDA', '#DCF2E9', '#8CFFFB', '#7A80D6', '#DEDEDE', 
+                '#F8C1D3', '#A4EBB7', '#00A8F3', '#FFE079', '#FFBE91', 
+                '#FFF200', '#FDECA6', '#FF696F', '#79BCFF', '#E4FF79'];
   if(props.item.colorNo==null)props.item.colorNo = parseInt(Math.random()*15);
   return(
     <TouchableOpacity 
@@ -631,13 +631,13 @@ class TimeTable extends Component {
                       {
                         (this.state.message=="저장하시겠습니까?")&&
                         <TouchableOpacity onPress={()=>this.toggleModal(false)} style={[MyModalStyles.btnPad]}>
-                          <View>
+                          <View style={MyModalStyles.button}>
                             <Text style={MyModalStyles.btntext}>취소</Text>
                           </View>
                         </TouchableOpacity>
                       }
                       <TouchableOpacity onPress={()=>this.toggleModal(true)} style={[MyModalStyles.btnPad]}>
-                        <View>
+                        <View style={MyModalStyles.button}>
                           <Text style={MyModalStyles.btntext}>확인</Text>
                         </View>
                       </TouchableOpacity>
@@ -702,8 +702,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   subText: {
-    fontSize: 12,
-    color: 'white',
+    padding: 3,
+    fontSize: 13,
+    color: 'black',
     flexWrap: 'nowrap',
     textAlign: 'center',
     textAlignVertical: 'center',
@@ -759,19 +760,20 @@ const MyModalStyles = StyleSheet.create({
   },
   message:{
     color: 'black',
-    fontSize: 28
+    fontSize: 25
   },
   btnPad:{
     backgroundColor: '#8C6C64',
+    margin: 10,
     borderWidth: 1,
-    width: SCREEN_WIDTH * 0.4,
-    height: SCREEN_HEIGHT * 0.05,
+    width: SCREEN_WIDTH * 0.35,
+    height: SCREEN_HEIGHT * 0.04,
     justifyContent: 'center',
     alignItems: 'center',
   },
   btntext:{
     fontSize: 20,
-    fontWeight: '300',
+    fontWeight: '400',
     color: 'white',
-  }
+  },
 })
